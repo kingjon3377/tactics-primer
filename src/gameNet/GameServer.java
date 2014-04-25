@@ -146,6 +146,7 @@ class GameServer extends Thread {
 			markServerStarted();
 
 			while (listening) {
+				@SuppressWarnings("resource")
 				final Socket nextSock = serverSocket.accept();
 				System.out.println(nThreadCount + " Another Thread Created");
 
