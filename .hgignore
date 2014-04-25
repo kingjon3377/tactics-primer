@@ -1,0 +1,6 @@
+syntax: glob
+*.class
+pmd-eclipse.log
+.*.swp
+.*.swo
+org.eclipse.jdt.annotation*.jar
