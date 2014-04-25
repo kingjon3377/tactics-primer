@@ -1,145 +1,182 @@
 package gameNet;
 
-import java.net.*;
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.LinkedList;
 
+/**
+ * A thread for the server.
+ * 
+ * @author Clem Hasselbach (original)
+ * @author Jonathan Lovelace (cleanups, docs)
+ */
+class GameServer extends Thread {
+	/**
+	 * The address of the server.
+	 */
+	private String inetAddress = null;
+	/**
+	 * This should really use one of Java's built-in classes that represents an IP address ...
+	 * @return the address of the server
+	 */
+	public String getInetAddress() {
+		return inetAddress;
+	}
+	/**
+	 * Connections to clients?
+	 */
+	private final LinkedList<GamePlayerProcess1> gamePlayers =
+			new LinkedList<>();
+	/**
+	 * The port number of the server
+	 */
+	private int portNum;
+	/**
+	 * Whether the server has started.
+	 */
+	boolean serverStarted = false;
+	/**
+	 * Whether the server is listening. (?)
+	 */
+	boolean listening = true;
+	/**
+	 * The socket to listen on for new connections.
+	 */
+	private ServerSocket serverSocket = null;
+	/**
+	 * The "core Game" (?).
+	 */
+	GameNet_CoreGame coreGame = null;
+	/**
+	 * @return the port number, but only after the server has started
+	 */
+	public synchronized int getPortNum() {
+		try {
+			if (!serverStarted) {
+				wait();
+			}
+		} catch (InterruptedException e) {
+			// Continue
+		}
+		System.out.println(" getPortNum = " + portNum);
+		return portNum;
+	}
+	/**
+	 * Mark that the server has started, and wake up every thread that is waiting on us.
+	 */
+	private synchronized void markServerStarted() {
+		serverStarted = true;
+		System.out.println(" markServerStarted");
+		notifyAll();
+	}
+	/**
+	 * @param port the port to listen on
+	 * @param gi the game-logic part of the server
+	 */
+	public GameServer(final int port, final GameNet_CoreGame gi) {
+		portNum = port;
+		coreGame = gi;
+	}
 
-class GameServer extends Thread{
-    public String inetAddress=null;    
-    LinkedList<GamePlayerProcess1> gamePlayers = new LinkedList<GamePlayerProcess1>();
-    int portNum;
-    boolean serverStarted = false;
-    boolean listening = true;
-    ServerSocket serverSocket = null;
-    GameNet_CoreGame coreGame = null;
-    
-    synchronized int getPortNum()
-    {
-        try
-        {
-            if (!serverStarted) wait();
-        } catch (InterruptedException e){}
-        System.out.println(" getPortNum = " + portNum);
-        return portNum;
-    }
-    
-    synchronized void markServerStarted()
-    {
-        serverStarted = true;
-        System.out.println(" markServerStarted");
-        notifyAll();
-    }
+	/**
+	 * Utility method to take objects received from one GamePlayer conversation,
+	 * Process it, and put it into the Message Queue of all GamePlayer
+	 * Conversations
+	 * @param ob the message
+	 */
+	public synchronized void putInputMsgs(final Object ob) {
+		Object ob2 = coreGame.process(ob);
+		if (ob2 != null) {
+			putOutputMsgs(ob2);
+		}
+	}
+	/**
+	 * @param ob a message to send to all "players".
+	 */
+	public synchronized void putOutputMsgs(final Object ob) {
+		for (final GamePlayerProcess1 p : gamePlayers) {
+			p.put(ob);
+		}
+	}
+	/**
+	 * @param index the index of a "player" to remove.
+	 */
+	public synchronized void removeMe(final int index) {
+		for (final GamePlayerProcess1 c : gamePlayers) {
+			if (index == c.getIndex()) {
+				c.stopGamePlayer();
+				gamePlayers.remove(c);
+				break;
+			}
+		}
+	}
+	/**
+	 * The main loop of this thread.
+	 */
+	@Override
+	public void run() {
+		int nThreadCount = 0;
 
-    GameServer(int port,  GameNet_CoreGame gi)
-    {
-        portNum = port;
-        coreGame = gi;
-    }
-    
-    // Utility method to take objects received from one GamePlayer conversation 
-    // Process it and
-    //    put it into the Message Queue of all GamePlayer Conversations
-    
-    synchronized void putInputMsgs(Object ob)
-    {
-        Object ob2 = coreGame.process(ob);
-        if (ob2 != null) 
-            putOutputMsgs(ob2);
-    }
-    synchronized void putOutputMsgs(Object ob)
-    {
-        for (int i=0; i < gamePlayers.size(); i++)
-        {
-            GamePlayerProcess1 p = gamePlayers.get(i);
-            p.put(ob);
-        }
-    }
+		try {
+			for (int i = 0; i <= 20; i++) {
+				if (i == 20) {
+					throw new RuntimeException(
+							"Exhausted possible port numbers");
+				}
+				try {
+					serverSocket = new ServerSocket(portNum);
+					break;
+				} catch (IOException e) {
+					System.out.println("GameServer.run Exception :" + e);
+					portNum += 1;
+					System.out
+							.println("Assuming port collision, retry with port "
+									+ portNum);
+				}
+			}
+			final InetAddress iaddr = InetAddress.getLocalHost();
 
-    
-    synchronized void removeMe(int index)
-    {
-        for (int i=0; i < gamePlayers.size(); i++)
-        {
-            GamePlayerProcess1 c = gamePlayers.get(i);
-            if (index == c.myIndex)
-            {
-                c.stopGamePlayer();
-                gamePlayers.remove(c);
-                break;
-            }
-        }
-    }
-    
-    public void run()
-    {
-        InetAddress iaddr=null;
-        Socket nextSock;
-        int nThreadCount=0;        
-           
-        try {                
-                for(int i=0; i <= 20; i++)
-                {
-                    if (i == 20) throw new RuntimeException("GameServer.run I Give up after 20 different port numbers");
-                    try
-                    {
-                        serverSocket = new ServerSocket(portNum);
-                        break;
-                    }
-                    catch (IOException e)
-                    { 
-                        System.out.println("GameServer.run Exception :" + e);
-                        portNum += 1;
-                        System.out.println("Assume that we hit a used port, try again with port number=" + portNum);
-                    }
-                }                
-                iaddr = InetAddress.getLocalHost();
-                                    
-                inetAddress = iaddr.getHostAddress(); // Make available 
-                serverSocket.setReuseAddress(true); // Makes port available sooner
-                                                    // even if port is being timed out              
-                
-                markServerStarted();
- 
-                
-                while (listening)
-                {
-                    nextSock = serverSocket.accept();
-                    System.out.println(nThreadCount +" Another Thread Created");
+			// Make the server available to callers
+			inetAddress = iaddr.getHostAddress();
+			// Make port available sooner even if it is being timed out.
+			serverSocket.setReuseAddress(true);
 
-                    // Create a thread to process incoming connection
-                    GamePlayerProcess1 gamePlayerChild = new GamePlayerProcess1(nextSock, this, nThreadCount++);
-                    gamePlayers.add(gamePlayerChild );
-                    gamePlayerChild .start();
-                }
+			markServerStarted();
 
-                serverSocket.close();
+			while (listening) {
+				final Socket nextSock = serverSocket.accept();
+				System.out.println(nThreadCount + " Another Thread Created");
 
-            } 
-        catch (IOException e) 
-            {
-                System.out.println("GameServer.run Exception:" + e);
-            }
-       
-    }
-    
-    void stopServer()
-    {
-        listening = false;
-        try
-        {
-            serverSocket.close();
-        } catch (IOException e){}
+				// Create a thread to process incoming connection
+				GamePlayerProcess1 gamePlayerChild =
+						new GamePlayerProcess1(nextSock, this, nThreadCount++);
+				gamePlayers.add(gamePlayerChild);
+				gamePlayerChild.start();
+			}
+			serverSocket.close();
+		} catch (IOException e) {
+			System.out.println("GameServer.run Exception:" + e);
+		}
 
-        // Go in the inverse order because we are removing entries from
-        // the linkedlist.  This then affects subsequent iterations.  
-        // This needs a picture to explain.
+	}
+	/**
+	 * Stop the server
+	 */
+	public void stopServer() {
+		listening = false;
+		try {
+			serverSocket.close();
+		} catch (IOException e) {
+			// Ignore; this is cleanup code anyway.
+		}
 
-        for (int i=gamePlayers.size()-1; i >= 0; i--)
-        {
-            GamePlayerProcess1 p = gamePlayers.get(i);
-            p.stopGamePlayer();
-        }
-
-    }
+		// Go in the inverse order because we are removing entries from
+		// the list.
+		for (int i = gamePlayers.size() - 1; i >= 0; i--) {
+			GamePlayerProcess1 p = gamePlayers.remove(i);
+			p.stopGamePlayer();
+		}
+	}
 }
