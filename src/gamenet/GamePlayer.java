@@ -30,7 +30,7 @@ public class GamePlayer extends Thread {
 	/**
 	 * A listener to be notified if a connection is broken.
 	 */
-	private GameNet_ConnectionBrokenInterface gameConnectionBrokenObj = null;
+	private ConnectionBrokenListener gameConnectionBrokenObj = null;
 	/**
 	 * The name of the player this is connected to.
 	 */
@@ -97,7 +97,7 @@ public class GamePlayer extends Thread {
 	 * @param gcb a listener to be called when a socket disconnects.
 	 */
 	public void setGameConnectionBroken(
-			final GameNet_ConnectionBrokenInterface gcb) {
+			final ConnectionBrokenListener gcb) {
 		gameConnectionBrokenObj = gcb;
 	}
 

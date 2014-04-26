@@ -6,7 +6,7 @@ package gamenet;
  * for this information, call the GamePlayer method:
  * setGameConnectionBroken(Interface_ConnectionBroken gcb)
  */
-public interface GameNet_ConnectionBrokenInterface {
+public interface ConnectionBrokenListener {
 	/**
 	 * Handle broken connection.
 	 */
