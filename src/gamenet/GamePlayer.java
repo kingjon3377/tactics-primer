@@ -191,15 +191,9 @@ public class GamePlayer extends Thread {
 	void exitGame() {
 		System.out.println("GamePlayer.exitGame " + playerName);
 		try {
-			if (socketOutput != null) {
-				socketOutput.close(); // Close output stream side of the socket
-			}
-			if (socketInput != null) {
-				socketInput.close(); // Close input stream side of socket
-			}
-			if (gameSocket != null) {
-				gameSocket.close(); // Close the socket
-			}
+			socketOutput.close(); // Close output stream side of the socket
+			socketInput.close(); // Close input stream side of socket
+			gameSocket.close(); // Close the socket
 		} catch (IOException e) {
 			// Do nothing; we're exiting
 		}
@@ -239,10 +233,8 @@ public class GamePlayer extends Thread {
 	 */
 	public void sendMessage(final Object obj) {
 		try {
-			if (socketOutput != null) {
-				socketOutput.writeObject(obj);
-				socketOutput.reset();
-			}
+			socketOutput.writeObject(obj);
+			socketOutput.reset();
 		} catch (IOException e) {
 			System.out.println("GamePlayer.sendMessage Exception: " + e);
 		}
