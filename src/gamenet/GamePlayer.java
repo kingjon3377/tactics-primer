@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The <b>GamePlayer</b> class manages the socket connection with the
  * GameControl.
@@ -27,6 +29,7 @@ import java.util.List;
  * @author Clem Hasselbach (original, most documentation)
  * @author Jonathan Lovelace (cleanups, further docs)
  */
+@NonNullByDefault
 public class GamePlayer extends Thread {
 	/**
 	 * Listeners to be notified if a connection is broken.
@@ -74,9 +77,6 @@ public class GamePlayer extends Thread {
 	public GamePlayer(final String plName, final GameControl game,
 			final GameNet_UserInterface r) {
 		playerName = plName;
-		if (game == null) {
-			throw new RuntimeException("joinGame called on a null gameControl");
-		}
 		gameControl = game;
 		userInterface = r;
 
@@ -84,24 +84,15 @@ public class GamePlayer extends Thread {
 		// in the next 2 statements ... can be solved with a little
 		// more logic.
 
-
 		try {
 			gameSocket =
 					new Socket(gameControl.getIpAddress(),
 							gameControl.getPortNum());
-			if (gameSocket == null) {
-				throw new RuntimeException("joinGame gameSocket null error");
-			}
-
 			// Create in/out classes associated with the Open Socket
 			ObjectOutputStream tempSocketOutput =
 					new ObjectOutputStream(gameSocket.getOutputStream());
 
 			socketInput = new ObjectInputStream(gameSocket.getInputStream());
-			if (socketInput == null) {
-				throw new RuntimeException("joinGame socketInput null error");
-			}
-
 			// Put in a pause to allow some time to get the server
 			// side thread up.
 			// It turns out that a sendMessage is likely to be sent
@@ -130,7 +121,6 @@ public class GamePlayer extends Thread {
 			throw new RuntimeException("I/O error joining the game", e);
 		}
 	}
-
 	/**
 	 * @return the name of the player associated with this connection.
 	 */
