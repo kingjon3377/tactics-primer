@@ -30,6 +30,7 @@ public abstract class GameCreator {
 		try (final Scanner keyboard = new Scanner(System.in)) {
 			System.out.print("Enter your name:\t");
 			final String playerName = keyboard.next();
+			assert playerName != null;
 			System.out.print("Server side of game? (y/n)\t");
 			String str = keyboard.next();
 
