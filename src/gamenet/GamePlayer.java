@@ -3,7 +3,6 @@ package gamenet;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -27,7 +26,7 @@ import java.net.UnknownHostException;
  * @author Jonathan Lovelace (cleanups, further docs)
  */
 
-public class GamePlayer extends Thread implements Serializable {
+public class GamePlayer extends Thread {
 	/**
 	 * A listener to be notified if a connection is broken.
 	 */
@@ -36,25 +35,44 @@ public class GamePlayer extends Thread implements Serializable {
 	 * The name of the player this is connected to.
 	 */
 	private String playerName;
-
-	private GameControl gameControl = null;
-
-	private Socket gameSocket = null;
+	/**
+	 * The server or connection to the server.
+	 */
+	private final GameControl gameControl;
+	/**
+	 * The socket connecting to the server.
+	 */
+	private Socket gameSocket;
+	/**
+	 * A stream for reading objects from the socket.
+	 */
 	private ObjectInputStream socketInput = null;
+	/**
+	 * A stream for writing objects to the socket.
+	 */
 	private ObjectOutputStream socketOutput = null;
+	/**
+	 * The game's UI.
+	 */
 	private GameNet_UserInterface userInterface = null;
-
+	/**
+	 * Whether the socket is still alive.
+	 */
 	private boolean socketAlive = true;
 
 	/**
 	 * The GamePlayer constructor needs the name of the player and the
 	 * GameControl class to connect to.
 	 * 
+	 * @param game the server to connect to
+	 * @param r the user interface
+	 * @param plName the name of the player
+	 * 
 	 */
-	public GamePlayer(final String playerName, final GameControl game,
+	public GamePlayer(final String plName, final GameControl game,
 			final GameNet_UserInterface r) {
-		this.playerName = playerName;
-		this.gameControl = game;
+		playerName = plName;
+		gameControl = game;
 		userInterface = r;
 
 		// There could be a little bit of a race condition
@@ -65,9 +83,7 @@ public class GamePlayer extends Thread implements Serializable {
 	}
 
 	/**
-	 * getPlayerName returns the name of the player associated with this
-	 * connection.
-	 * 
+	 * @return the name of the player associated with this connection.
 	 */
 	public String getPlayerName() {
 		return playerName;
@@ -97,10 +113,7 @@ public class GamePlayer extends Thread implements Serializable {
 		try {
 			Object outputFromSocket;
 			// Read from Socket and write to Screen
-			while ((outputFromSocket = socketInput.readObject()) != null) // Read
-																			// from
-																			// Socket
-			{
+			while ((outputFromSocket = socketInput.readObject()) != null) {
 				receivedMessage(outputFromSocket);
 			}
 		} catch (ClassNotFoundException e) {
@@ -127,7 +140,7 @@ public class GamePlayer extends Thread implements Serializable {
 	 * 
 	 * @return true if socket is still alive
 	 */
-	public boolean GameIsAlive() {
+	public boolean isGameAlive() {
 		return socketAlive;
 	}
 

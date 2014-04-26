@@ -41,7 +41,8 @@ public abstract class GameCreator {
 			}
 
 			// Connect ourselves to the GameControl
-			final GamePlayer gamePlayer = new GamePlayer(playerName, gameControl, ui);
+			final GamePlayer gamePlayer =
+					new GamePlayer(playerName, gameControl, ui);
 
 			ui.startUserInterface(gamePlayer);
 		}

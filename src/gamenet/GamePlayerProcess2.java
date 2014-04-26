@@ -1,5 +1,6 @@
 package gamenet;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
@@ -58,7 +59,7 @@ class GamePlayerProcess2 extends Thread {
 			System.out.println("GamePlayerProcess2.run Class Not Found Err: "
 					+ e);
 			// e.printStackTrace();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("GamePlayerProcess2.run Err: " + e);
 			// e.printStackTrace();
 		}
@@ -68,7 +69,7 @@ class GamePlayerProcess2 extends Thread {
 			System.out
 					.println("GamePlayerProcess2.run terminating: " + myIndex);
 			mom.removeMe(myIndex); // just remove me
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
