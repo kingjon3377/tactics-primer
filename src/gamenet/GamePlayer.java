@@ -1,4 +1,4 @@
-package gameNet;
+package gamenet;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
