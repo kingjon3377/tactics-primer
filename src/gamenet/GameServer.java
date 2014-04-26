@@ -39,25 +39,25 @@ class GameServer extends Thread {
 	/**
 	 * Whether the server has started.
 	 */
-	boolean serverStarted = false;
+	private boolean serverStarted = false;
 	/**
 	 * Whether the server is listening. (?)
 	 */
-	boolean listening = true;
+	private boolean listening = true;
 	/**
 	 * The socket to listen on for new connections.
 	 */
-	private ServerSocket serverSocket = null;
+	private ServerSocket serverSocket;
 	/**
 	 * The "core Game" (?).
 	 */
-	GameNetCoreGame coreGame = null;
+	private GameNetCoreGame coreGame;
 	/**
 	 * @return the port number, but only after the server has started
 	 */
 	public synchronized int getPortNum() {
 		try {
-			if (!serverStarted) {
+			while (!serverStarted) {
 				wait();
 			}
 		} catch (InterruptedException e) {
