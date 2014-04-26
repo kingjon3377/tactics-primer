@@ -31,12 +31,12 @@ public class GamePlayer extends Thread {
 	/**
 	 * Listeners to be notified if a connection is broken.
 	 */
-	private List<ConnectionBrokenListener> connectionBrokenListeners =
+	private final List<ConnectionBrokenListener> connectionBrokenListeners =
 			new ArrayList<>();
 	/**
 	 * The name of the player this is connected to.
 	 */
-	private String playerName;
+	private final String playerName;
 	/**
 	 * The server or connection to the server.
 	 */
@@ -44,19 +44,19 @@ public class GamePlayer extends Thread {
 	/**
 	 * The socket connecting to the server.
 	 */
-	private Socket gameSocket;
+	private final Socket gameSocket;
 	/**
 	 * A stream for reading objects from the socket.
 	 */
-	private ObjectInputStream socketInput = null;
+	private final ObjectInputStream socketInput;
 	/**
 	 * A stream for writing objects to the socket.
 	 */
-	private ObjectOutputStream socketOutput = null;
+	private final ObjectOutputStream socketOutput;
 	/**
 	 * The game's UI.
 	 */
-	private GameNet_UserInterface userInterface = null;
+	private final GameNet_UserInterface userInterface;
 	/**
 	 * Whether the socket is still alive.
 	 */
@@ -74,6 +74,9 @@ public class GamePlayer extends Thread {
 	public GamePlayer(final String plName, final GameControl game,
 			final GameNet_UserInterface r) {
 		playerName = plName;
+		if (game == null) {
+			throw new RuntimeException("joinGame called on a null gameControl");
+		}
 		gameControl = game;
 		userInterface = r;
 
@@ -81,7 +84,51 @@ public class GamePlayer extends Thread {
 		// in the next 2 statements ... can be solved with a little
 		// more logic.
 
-		joinGame();
+
+		try {
+			gameSocket =
+					new Socket(gameControl.getIpAddress(),
+							gameControl.getPortNum());
+			if (gameSocket == null) {
+				throw new RuntimeException("joinGame gameSocket null error");
+			}
+
+			// Create in/out classes associated with the Open Socket
+			ObjectOutputStream tempSocketOutput =
+					new ObjectOutputStream(gameSocket.getOutputStream());
+
+			socketInput = new ObjectInputStream(gameSocket.getInputStream());
+			if (socketInput == null) {
+				throw new RuntimeException("joinGame socketInput null error");
+			}
+
+			// Put in a pause to allow some time to get the server
+			// side thread up.
+			// It turns out that a sendMessage is likely to be sent
+			// immediately when this call returns.
+
+			try {
+				Thread.sleep(500); // Sleep for 1/2 second
+			} catch (InterruptedException e) {
+				// continue
+			}
+
+			// Start up a Thread to read from the socket and write
+			// the contents to the screen
+
+			this.start();
+			try {
+				Thread.sleep(500); // Sleep for 1/2 second
+			} catch (InterruptedException e) {
+				// continue
+			}
+			socketOutput = tempSocketOutput;
+
+		} catch (UnknownHostException e) {
+			throw new RuntimeException("Can't find host", e);
+		} catch (IOException e) {
+			throw new RuntimeException("I/O error joining the game", e);
+		}
 	}
 
 	/**
@@ -143,62 +190,6 @@ public class GamePlayer extends Thread {
 	 */
 	public boolean isGameAlive() {
 		return socketAlive;
-	}
-
-	/**
-	 * joinGame will open a socket to the GameControl and construct an
-	 * ObjectOutputStream and ObjectInputStream from the socket.
-	 */
-	public void joinGame() {
-		if (gameControl == null) {
-			throw new RuntimeException("joinGame called on a null gameControl");
-		}
-
-		try {
-			gameSocket =
-					new Socket(gameControl.getIpAddress(),
-							gameControl.getPortNum());
-			if (gameSocket == null) {
-				throw new RuntimeException("joinGame gameSocket null error");
-			}
-
-			// Create in/out classes associated with the Open Socket
-			ObjectOutputStream tempSocketOutput =
-					new ObjectOutputStream(gameSocket.getOutputStream());
-
-			socketInput = new ObjectInputStream(gameSocket.getInputStream());
-			if (socketInput == null) {
-				throw new RuntimeException("joinGame socketInput null error");
-			}
-
-			// Put in a pause to allow some time to get the server
-			// side thread up.
-			// It turns out that a sendMessage is likely to be sent
-			// immediately when this call returns.
-
-			try {
-				Thread.sleep(500); // Sleep for 1/2 second
-			} catch (InterruptedException e) {
-				// continue
-			}
-
-			// Start up a Thread to read from the socket and write
-			// the contents to the screen
-
-			this.start();
-			try {
-				Thread.sleep(500); // Sleep for 1/2 second
-			} catch (InterruptedException e) {
-				// continue
-			}
-			socketOutput = tempSocketOutput;
-
-		} catch (UnknownHostException e) {
-			System.out.println("GamePlayer.joinGame Can't find host: " + e);
-		} catch (IOException e) {
-			System.out.println("GamePlayer.joinGame IOException: " + e);
-		}
-
 	}
 
 	/**
