@@ -97,28 +97,29 @@ public class GamePlayer extends Thread {
 			// side thread up.
 			// It turns out that a sendMessage is likely to be sent
 			// immediately when this call returns.
-
-			try {
-				Thread.sleep(500); // Sleep for 1/2 second
-			} catch (InterruptedException e) {
-				// continue
-			}
+			sleepHalfSecond();
 
 			// Start up a Thread to read from the socket and write
 			// the contents to the screen
 
 			this.start();
-			try {
-				Thread.sleep(500); // Sleep for 1/2 second
-			} catch (InterruptedException e) {
-				// continue
-			}
+			sleepHalfSecond();
 			socketOutput = tempSocketOutput;
 
 		} catch (UnknownHostException e) {
 			throw new RuntimeException("Can't find host", e);
 		} catch (IOException e) {
 			throw new RuntimeException("I/O error joining the game", e);
+		}
+	}
+	/**
+	 * Sleep for half a second, or until woken.
+	 */
+	private static void sleepHalfSecond() {
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			return;
 		}
 	}
 	/**
