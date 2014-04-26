@@ -7,7 +7,7 @@ package gamenet;
  * @author Clem Hasselbach (original)
  * @author Jonathan Lovelace (cleanups, method docs)
  */
-public interface GameNet_UserInterface {
+public interface GameNetUserInterface {
 	/**
 	 * Handle a message from the server.
 	 * @param ob the message

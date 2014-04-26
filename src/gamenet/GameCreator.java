@@ -16,7 +16,7 @@ public abstract class GameCreator {
 	/**
 	 * @return a new initialized "game" object.
 	 */
-	public abstract GameNet_CoreGame createGame();
+	public abstract GameNetCoreGame createGame();
 
 	/**
 	 * Set up a game, using the logic from the subclass.
@@ -24,7 +24,7 @@ public abstract class GameCreator {
 	 * @param ui
 	 *            the "user interface" object (?)
 	 */
-	public void enterGame(final GameNet_UserInterface ui) {
+	public void enterGame(final GameNetUserInterface ui) {
 		GameControl gameControl = new GameControl(this);
 
 		try (final Scanner keyboard = new Scanner(System.in)) {
