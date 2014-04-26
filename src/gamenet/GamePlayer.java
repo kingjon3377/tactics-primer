@@ -150,7 +150,6 @@ public class GamePlayer extends Thread {
 	 * ObjectOutputStream and ObjectInputStream from the socket.
 	 */
 	public void joinGame() {
-		ObjectOutputStream tempSocketOutput = null;
 		if (gameControl == null) {
 			throw new RuntimeException("joinGame called on a null gameControl");
 		}
@@ -164,7 +163,7 @@ public class GamePlayer extends Thread {
 			}
 
 			// Create in/out classes associated with the Open Socket
-			tempSocketOutput =
+			ObjectOutputStream tempSocketOutput =
 					new ObjectOutputStream(gameSocket.getOutputStream());
 
 			socketInput = new ObjectInputStream(gameSocket.getInputStream());
@@ -192,13 +191,13 @@ public class GamePlayer extends Thread {
 			} catch (InterruptedException e) {
 				// continue
 			}
+			socketOutput = tempSocketOutput;
 
 		} catch (UnknownHostException e) {
-			System.out.println("GamePlayer.joinGame Cant find host: " + e);
+			System.out.println("GamePlayer.joinGame Can't find host: " + e);
 		} catch (IOException e) {
 			System.out.println("GamePlayer.joinGame IOException: " + e);
 		}
-		socketOutput = tempSocketOutput;
 
 	}
 
