@@ -15,17 +15,18 @@ public class GamePlayerProcess1 extends Thread {
 	/**
 	 * The connection to the server.
 	 */
-	private Socket socket = null;
+	private final Socket socket;
 	/**
 	 * The current index. (Into what?)
 	 */
-	private int myIndex;
+	private final int myIndex;
 	/**
 	 * @return the current index (into what?)
 	 */
 	public int getIndex() {
 		return myIndex;
 	}
+
 	/**
 	 * Whether the thread should continue to run.
 	 */
@@ -38,7 +39,6 @@ public class GamePlayerProcess1 extends Thread {
 	 * Messages (to send? that we received?).
 	 */
 	private final LinkedList<Object> msgObjects = new LinkedList<>();
-
 	/**
 	 * Stop this thread, cleaning up the socket.
 	 */
@@ -71,15 +71,15 @@ public class GamePlayerProcess1 extends Thread {
 	public synchronized Object get() {
 		Object retval;
 		while (continueFlag) {
-			if (!msgObjects.isEmpty()) {
-				retval = msgObjects.removeFirst();
-				return retval;
-			} else {
+			if (msgObjects.isEmpty()) {
 				try {
 					wait();
 				} catch (InterruptedException e) {
-					// Continue;
+					continue;
 				}
+			} else {
+				retval = msgObjects.removeFirst();
+				return retval;
 			}
 		}
 		return null;
