@@ -1,4 +1,4 @@
-package gameNet;
+package gamenet;
 
 /**
  * The abstract class defining the interface for the game server. This really

@@ -1,4 +1,4 @@
-package gameNet;
+package gamenet;
 
 /**
  * Your GUI might want to implement this interface if wants to know when the

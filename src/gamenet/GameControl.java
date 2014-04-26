@@ -1,4 +1,4 @@
-package gameNet;
+package gamenet;
 
 /**
  * The <b>GameControl</b> class provides the overall framework for gameNet. This

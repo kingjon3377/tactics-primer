@@ -1,4 +1,4 @@
-package gameNet;
+package gamenet;
 
 import java.io.ObjectInputStream;
 import java.net.Socket;
