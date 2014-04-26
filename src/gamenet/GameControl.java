@@ -25,7 +25,7 @@ public class GameControl {
 	/**
 	 * The object to create the server?
 	 */
-	GameCreator gameCreator = null;
+	private GameCreator gameCreator;
 
 	/**
 	 * This is method returns the IP address used for this game.
