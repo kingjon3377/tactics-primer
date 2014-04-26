@@ -2,6 +2,8 @@ package gamenet;
 
 import java.util.Scanner;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * An abstract class for setting up a game?
  * 
@@ -9,6 +11,7 @@ import java.util.Scanner;
  * @author Jonathan Lovelace (cleanups, docs)
  * 
  */
+@NonNullByDefault
 public abstract class GameCreator {
 	/**
 	 * @return a new initialized "game" object.
