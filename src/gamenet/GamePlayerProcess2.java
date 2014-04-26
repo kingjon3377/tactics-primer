@@ -11,7 +11,7 @@ import java.net.Socket;
  */
 class GamePlayerProcess2 extends Thread {
 	/**
-	 * The server that owns this thread
+	 * The server that owns this thread.
 	 */
 	private GameServer mom;
 	/**

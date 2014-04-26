@@ -13,7 +13,7 @@ import java.util.LinkedList;
  */
 public class GamePlayerProcess1 extends Thread {
 	/**
-	 * The connection to the server
+	 * The connection to the server.
 	 */
 	private Socket socket = null;
 	/**
@@ -27,7 +27,7 @@ public class GamePlayerProcess1 extends Thread {
 		return myIndex;
 	}
 	/**
-	 * Whether the thread should continue to run
+	 * Whether the thread should continue to run.
 	 */
 	private boolean continueFlag = true;
 	/**

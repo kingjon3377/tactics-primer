@@ -28,8 +28,15 @@ import java.net.UnknownHostException;
  */
 
 public class GamePlayer extends Thread implements Serializable {
+	/**
+	 * A listener to be notified if a connection is broken.
+	 */
 	private GameNet_ConnectionBrokenInterface gameConnectionBrokenObj = null;
+	/**
+	 * The name of the player this is connected to.
+	 */
 	private String playerName;
+
 	private GameControl gameControl = null;
 
 	private Socket gameSocket = null;
