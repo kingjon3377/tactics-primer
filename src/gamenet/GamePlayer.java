@@ -59,7 +59,7 @@ public class GamePlayer extends Thread {
 	/**
 	 * The game's UI.
 	 */
-	private final GameNet_UserInterface userInterface;
+	private final GameNetUserInterface userInterface;
 	/**
 	 * Whether the socket is still alive.
 	 */
@@ -75,7 +75,7 @@ public class GamePlayer extends Thread {
 	 * 
 	 */
 	public GamePlayer(final String plName, final GameControl game,
-			final GameNet_UserInterface r) {
+			final GameNetUserInterface r) {
 		playerName = plName;
 		gameControl = game;
 		userInterface = r;

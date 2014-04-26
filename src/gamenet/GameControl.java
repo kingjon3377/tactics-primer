@@ -21,7 +21,7 @@ public class GameControl {
 	/**
 	 * The game logic. 
 	 */
-	private GameNet_CoreGame coreGame = null;
+	private GameNetCoreGame coreGame = null;
 	/**
 	 * The object to create the server?
 	 */

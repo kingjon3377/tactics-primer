@@ -51,7 +51,7 @@ class GameServer extends Thread {
 	/**
 	 * The "core Game" (?).
 	 */
-	GameNet_CoreGame coreGame = null;
+	GameNetCoreGame coreGame = null;
 	/**
 	 * @return the port number, but only after the server has started
 	 */
@@ -80,7 +80,7 @@ class GameServer extends Thread {
 	 * @param port the port to listen on
 	 * @param gi the game-logic part of the server
 	 */
-	public GameServer(final int port, final GameNet_CoreGame gi) {
+	public GameServer(final int port, final GameNetCoreGame gi) {
 		portNum = port;
 		coreGame = gi;
 	}

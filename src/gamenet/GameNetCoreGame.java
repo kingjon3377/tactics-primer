@@ -8,7 +8,7 @@ package gamenet;
  * @author Jonathan Lovelace (cleanups and docs)
  * 
  */
-public abstract class GameNet_CoreGame {
+public abstract class GameNetCoreGame {
 	/**
 	 * Start the game.
 	 * @param control the parameters for the server
