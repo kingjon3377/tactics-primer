@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The <b>GamePlayer</b> class manages the socket connection with the
@@ -25,12 +27,12 @@ import java.net.UnknownHostException;
  * @author Clem Hasselbach (original, most documentation)
  * @author Jonathan Lovelace (cleanups, further docs)
  */
-
 public class GamePlayer extends Thread {
 	/**
-	 * A listener to be notified if a connection is broken.
+	 * Listeners to be notified if a connection is broken.
 	 */
-	private ConnectionBrokenListener gameConnectionBrokenObj = null;
+	private List<ConnectionBrokenListener> connectionBrokenListeners =
+			new ArrayList<>();
 	/**
 	 * The name of the player this is connected to.
 	 */
@@ -96,9 +98,8 @@ public class GamePlayer extends Thread {
 	 * 
 	 * @param gcb a listener to be called when a socket disconnects.
 	 */
-	public void setGameConnectionBroken(
-			final ConnectionBrokenListener gcb) {
-		gameConnectionBrokenObj = gcb;
+	public void addConnectionBrokenListener(final ConnectionBrokenListener gcb) {
+		connectionBrokenListeners.add(gcb);
 	}
 
 	/**
@@ -127,8 +128,8 @@ public class GamePlayer extends Thread {
 		// will know that it's time to give up.
 
 		socketAlive = false;
-		if (gameConnectionBrokenObj != null) {
-			gameConnectionBrokenObj.gameConnectionBroken();
+		for (ConnectionBrokenListener listener : connectionBrokenListeners) {
+			listener.gameConnectionBroken();
 		}
 		System.out.println("GamePlayer.run Thread terminating ");
 
