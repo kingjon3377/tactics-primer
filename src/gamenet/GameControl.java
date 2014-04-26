@@ -74,8 +74,8 @@ public class GameControl {
 	 * updates back to the GUI. For example, a Pong game would need this to send
 	 * ball updates that are not directly associated with a user input.
 	 * 
-	 * @param GameOutputObj
-	 *            is an output that is returned to the GUI from the GameControl
+	 * @param ob
+	 *            an output that is returned to the GUI from the GameControl
 	 */
 
 	public void putMsgs(final Object ob) {
