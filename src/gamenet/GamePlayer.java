@@ -157,7 +157,7 @@ public class GamePlayer extends Thread implements Serializable {
 			// immediately when this call returns.
 
 			try {
-				Thread.sleep(500);// Sleep for 1/2 second
+				Thread.sleep(500); // Sleep for 1/2 second
 			} catch (InterruptedException e) {
 				// continue
 			}
@@ -167,7 +167,7 @@ public class GamePlayer extends Thread implements Serializable {
 
 			this.start();
 			try {
-				Thread.sleep(500);// Sleep for 1/2 second
+				Thread.sleep(500); // Sleep for 1/2 second
 			} catch (InterruptedException e) {
 				// continue
 			}
@@ -183,7 +183,7 @@ public class GamePlayer extends Thread implements Serializable {
 
 	/**
 	 * exitGame is called when you want to terminate the connection to the
-	 * GameControl
+	 * GameControl.
 	 * 
 	 */
 	void exitGame() {

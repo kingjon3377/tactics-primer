@@ -10,5 +10,5 @@ public interface GameNet_ConnectionBrokenInterface {
 	/**
 	 * Handle broken connection.
 	 */
-	public void gameConnectionBroken();
+	void gameConnectionBroken();
 }
