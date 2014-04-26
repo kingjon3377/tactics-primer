@@ -17,8 +17,11 @@ class GameServer extends Thread {
 	 * The address of the server.
 	 */
 	private String inetAddress = null;
+	
 	/**
-	 * This should really use one of Java's built-in classes that represents an IP address ...
+	 * This should really use one of Java's built-in classes that represents an
+	 * IP address ...
+	 * 
 	 * @return the address of the server
 	 */
 	public String getInetAddress() {
@@ -30,7 +33,7 @@ class GameServer extends Thread {
 	private final LinkedList<GamePlayerProcess1> gamePlayers =
 			new LinkedList<>();
 	/**
-	 * The port number of the server
+	 * The port number of the server.
 	 */
 	private int portNum;
 	/**
@@ -63,8 +66,10 @@ class GameServer extends Thread {
 		System.out.println(" getPortNum = " + portNum);
 		return portNum;
 	}
+	
 	/**
-	 * Mark that the server has started, and wake up every thread that is waiting on us.
+	 * Mark that the server has started, and wake up every thread that is
+	 * waiting on us.
 	 */
 	private synchronized void markServerStarted() {
 		serverStarted = true;
@@ -82,8 +87,8 @@ class GameServer extends Thread {
 
 	/**
 	 * Utility method to take objects received from one GamePlayer conversation,
-	 * Process it, and put it into the Message Queue of all GamePlayer
-	 * Conversations
+	 * process it, and put it into the Message Queue of all GamePlayer
+	 * conversations.
 	 * @param ob the message
 	 */
 	public synchronized void putInputMsgs(final Object ob) {
@@ -163,7 +168,7 @@ class GameServer extends Thread {
 
 	}
 	/**
-	 * Stop the server
+	 * Stop the server.
 	 */
 	public void stopServer() {
 		listening = false;

@@ -62,8 +62,9 @@ public class GamePlayerProcess1 extends Thread {
 	}
 
 	/**
-	 * Either immediately return the next message in the queue (popping it) or, if the queue
-	 * is empty, wait for a new message to enter and then pop and return it.
+	 * Either immediately return the next message in the queue (popping it) or,
+	 * if the queue is empty, wait for a new message to enter and then pop and
+	 * return it.
 	 * 
 	 * @return the message
 	 */
@@ -103,14 +104,15 @@ public class GamePlayerProcess1 extends Thread {
 	public void run() {
 		GamePlayerProcess2 proc2 = new GamePlayerProcess2(socket, mom, myIndex);
 		proc2.start();
-		try (ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream())) {
+		try (ObjectOutputStream out =
+				new ObjectOutputStream(socket.getOutputStream())) {
 			Object outputOb;
 			while ((outputOb = get()) != null) {
 				out.writeObject(outputOb);
 				out.reset();
 			}
 			socket.close();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			System.out.println("GamePlayerProcess1 Err: " + e);
 		} finally {
 			System.out.println("GamePlayerProcess1.run Terminating : "
@@ -119,7 +121,7 @@ public class GamePlayerProcess1 extends Thread {
 					// happy here
 				socket.close();
 
-			} catch (Exception e) {
+			} catch (IOException e) {
 				System.out
 						.println("GamePlayerProcess1.run Exception closing sockets :"
 								+ e);

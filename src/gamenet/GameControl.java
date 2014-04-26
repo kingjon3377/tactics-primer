@@ -48,6 +48,7 @@ public class GameControl {
 	/**
 	 * This constructor is used when everything is on the same computer and you
 	 * aren't needing to network.
+	 * @param gc the "game creator" to set up the game?
 	 */
 	public GameControl(final GameCreator gc) {
 		gameCreator = gc;
