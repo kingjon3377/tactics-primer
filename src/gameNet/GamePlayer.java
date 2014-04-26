@@ -187,21 +187,6 @@ public class GamePlayer extends Thread implements Serializable {
 	 * 
 	 */
 	void exitGame() {
-		exitGame(null);
-	}
-
-	/**
-	 * Call this version of exitGame if you want to pass one last object to the
-	 * gameControl and then terminate the connection to the GameControl.
-	 * 
-	 * @param ob
-	 *            Object to pass to the GameControl before terminating
-	 */
-	void exitGame(final Object ob) {
-		if (ob != null) {
-			sendMessage(ob);
-		}
-
 		System.out.println("GamePlayer.exitGame " + playerName);
 		try {
 			if (socketOutput != null) {
@@ -216,6 +201,18 @@ public class GamePlayer extends Thread implements Serializable {
 		} catch (IOException e) {
 			// Do nothing; we're exiting
 		}
+	}
+
+	/**
+	 * Call this version of exitGame if you want to pass one last object to the
+	 * gameControl and then terminate the connection to the GameControl.
+	 * 
+	 * @param ob
+	 *            Object to pass to the GameControl before terminating
+	 */
+	void exitGame(final Object ob) {
+		sendMessage(ob);
+		exitGame();
 	}
 
 	/*
