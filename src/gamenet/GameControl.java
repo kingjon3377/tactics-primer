@@ -13,19 +13,19 @@ public class GameControl {
 	/**
 	 * The server that handles client connections.
 	 */
-	private GameServer gameServer = null;
+	private GameServer gameServer;
 	/**
 	 * The IP address of the server, in human-readable format.
 	 */
-	private String ipAddr = null;
+	private String ipAddr;
 	/**
 	 * The game logic. 
 	 */
-	private GameNetCoreGame coreGame = null;
+	private GameNetCoreGame coreGame;
 	/**
 	 * The object to create the server?
 	 */
-	private GameCreator gameCreator;
+	private final GameCreator gameCreator;
 
 	/**
 	 * This is method returns the IP address used for this game.
