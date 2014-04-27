@@ -21,13 +21,6 @@ public class GamePlayerProcess1 extends Thread {
 	 */
 	private final int myIndex;
 	/**
-	 * @return the current index (into what?)
-	 */
-	public int getIndex() {
-		return myIndex;
-	}
-
-	/**
 	 * Whether the thread should continue to run.
 	 */
 	private boolean continueFlag = true;
@@ -39,6 +32,13 @@ public class GamePlayerProcess1 extends Thread {
 	 * Messages (to send? that we received?).
 	 */
 	private final LinkedList<Object> msgObjects = new LinkedList<>();
+	/**
+	 * @return the current index (into what?)
+	 */
+	public int getIndex() {
+		return myIndex;
+	}
+
 	/**
 	 * Stop this thread, cleaning up the socket.
 	 */
@@ -102,7 +102,7 @@ public class GamePlayerProcess1 extends Thread {
 	 */
 	@Override
 	public void run() {
-		GamePlayerProcess2 proc2 = new GamePlayerProcess2(socket, mom, myIndex);
+		ServerFromPlayerReaderThread proc2 = new ServerFromPlayerReaderThread(socket, mom, myIndex);
 		proc2.start();
 		try (ObjectOutputStream out =
 				new ObjectOutputStream(socket.getOutputStream())) {

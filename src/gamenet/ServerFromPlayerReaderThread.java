@@ -10,7 +10,7 @@ import java.net.Socket;
  * @author Clem Hasselbach (original)
  * @author Jonathan Lovelace (cleanups, docs)
  */
-class GamePlayerProcess2 extends Thread {
+class ServerFromPlayerReaderThread extends Thread {
 	/**
 	 * The server that owns this thread.
 	 */
@@ -32,7 +32,7 @@ class GamePlayerProcess2 extends Thread {
 	 * @param index
 	 *            our index in the table of threads
 	 */
-	public GamePlayerProcess2(final Socket s, final GameServer m,
+	public ServerFromPlayerReaderThread(final Socket s, final GameServer m,
 			final int index) {
 		sock = s;
 		mom = m;
