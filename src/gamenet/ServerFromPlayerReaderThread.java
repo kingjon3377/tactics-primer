@@ -14,15 +14,15 @@ class ServerFromPlayerReaderThread extends Thread {
 	/**
 	 * The server that owns this thread.
 	 */
-	private GameServer mom;
+	private final GameServer mom;
 	/**
 	 * The socket connecting to the client.
 	 */
-	private Socket sock;
+	private final Socket sock;
 	/**
 	 * Our index in the table of threads.
 	 */
-	private int myIndex;
+	private final int myIndex;
 
 	/**
 	 * @param s
@@ -46,25 +46,19 @@ class ServerFromPlayerReaderThread extends Thread {
 	public void run() {
 		// Read from socket and put the string read into all message queues for
 		// all conversations.
-
 		try (final ObjectInputStream in =
 				new ObjectInputStream(sock.getInputStream())) {
 			Object inputObj;
-
-			// Read from socket
 			while ((inputObj = in.readObject()) != null) {
 				mom.putInputMsgs(inputObj);
 			}
 		} catch (ClassNotFoundException e) {
 			System.out.println("GamePlayerProcess2.run Class Not Found Err: "
 					+ e);
-			// e.printStackTrace();
 		} catch (IOException e) {
 			System.out.println("GamePlayerProcess2.run Err: " + e);
-			// e.printStackTrace();
 		}
-		try { // I'm annoyed that I need try/catch to keep the compiler happy
-				// here
+		try { // I'm annoyed the compiler requires try/catch here
 			sock.close();
 			System.out
 					.println("GamePlayerProcess2.run terminating: " + myIndex);
