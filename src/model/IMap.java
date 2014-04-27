@@ -12,11 +12,11 @@ public interface IMap extends Iterable<IPoint> {
 	 * @param point a point on the map
 	 * @return the terrain there
 	 */
-	TileType getTerrain(Point point);
+	TileType getTerrain(IPoint point);
 	/**
 	 * @param point a point on the map
 	 * @return the fixture there, if any
 	 */
 	@Nullable
-	ITileFixture getContents(Point point);
+	ITileFixture getContents(IPoint point);
 }
