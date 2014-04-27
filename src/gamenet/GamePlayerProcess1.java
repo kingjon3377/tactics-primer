@@ -102,8 +102,7 @@ public class GamePlayerProcess1 extends Thread {
 	 */
 	@Override
 	public void run() {
-		ServerFromPlayerReaderThread proc2 = new ServerFromPlayerReaderThread(socket, mom, myIndex);
-		proc2.start();
+		new ServerFromPlayerReaderThread(socket, mom, myIndex).start();
 		try (ObjectOutputStream out =
 				new ObjectOutputStream(socket.getOutputStream())) {
 			Object outputOb;
