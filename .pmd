@@ -1036,42 +1036,6 @@
             <ruleset>Braces</ruleset>
         </rule>
         <rule>
-            <name>UseProperClassLoader</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>MDBAndSessionBeanNamingConvention</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>RemoteSessionInterfaceNamingConvention</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>LocalInterfaceSessionNamingConvention</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>LocalHomeNamingConvention</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>RemoteInterfaceNamingConvention</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>DoNotCallSystemExit</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>StaticEJBFieldShouldBeFinal</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
-            <name>DoNotUseThreads</name>
-            <ruleset>J2EE</ruleset>
-        </rule>
-        <rule>
             <name>CallSuperFirst</name>
             <ruleset>Android</ruleset>
         </rule>
