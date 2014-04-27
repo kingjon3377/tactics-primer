@@ -14,11 +14,31 @@ public class TPMap implements IMap {
 	/**
 	 * The terrain.
 	 */
-	private final Map<IPoint, TileType> terrain = new ConcurrentHashMap<>();
+	private final Map<IPoint, TileType> terrain;
 	/**
 	 * The non-terrain contents.
 	 */
-	private final Map<IPoint, ITileFixture> contents = new ConcurrentHashMap<>();
+	private final Map<IPoint, ITileFixture> contents;
+	/**
+	 * No-arg constructor.
+	 */
+	public TPMap() {
+		terrain = new ConcurrentHashMap<>();
+		contents = new ConcurrentHashMap<>();
+	}
+	/**
+	 * @param terr the terrain
+	 * @param fixtures the fixtures on the map
+	 */
+	public TPMap(final Map<IPoint, TileType> terr,
+			final Map<IPoint, ITileFixture> fixtures) {
+		this();
+		if (!terr.keySet().containsAll(fixtures.keySet())) {
+			throw new IllegalArgumentException("Can't have fixtures on no terrain");
+		}
+		terrain.putAll(terr);
+		contents.putAll(fixtures);
+	}
 	/**
 	 * @return an iteration over the points in the map 
 	 */
