@@ -1,4 +1,7 @@
 package model;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The location of a tile.
  * @author Jonathan Lovelace
@@ -42,5 +45,15 @@ public final class Point implements IPoint {
 	@Override
 	public int hashCode() {
 		return (row + column) * (row + column + 1) / 2 + column;
+	}
+	/**
+	 * @param obj an object
+	 * @return whether it's an equal point
+	 */
+	@Override
+	public boolean equals(@Nullable final Object obj) {
+		return this == obj || obj instanceof IPoint
+				&& row == ((IPoint) obj).getRow()
+				&& column == ((IPoint) obj).getColumn();
 	}
 }
