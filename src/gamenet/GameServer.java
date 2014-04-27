@@ -56,12 +56,12 @@ class GameServer extends Thread {
 	 * @return the port number, but only after the server has started
 	 */
 	public synchronized int getPortNum() {
-		try {
-			while (!serverStarted) {
+		while (!serverStarted) {
+			try {
 				wait();
+			} catch (InterruptedException e) {
+				continue;
 			}
-		} catch (InterruptedException e) {
-			// Continue
 		}
 		System.out.println(" getPortNum = " + portNum);
 		return portNum;
