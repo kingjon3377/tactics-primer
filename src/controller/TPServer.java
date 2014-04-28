@@ -8,8 +8,10 @@ import java.util.Queue;
 
 import model.IPoint;
 import model.ITileFixture;
+import model.ProxyUnit;
 import model.TPMap;
 import model.TileType;
+import model.Unit;
 
 import common.MapUpdateListener;
 
@@ -136,6 +138,8 @@ public class TPServer {
 			throw new IllegalArgumentException("Not your turn");
 		} else if (mover == null) {
 			throw new IllegalArgumentException("No such unit");
+		} else if (!(mover instanceof Unit)) {
+			throw new IllegalArgumentException("Only units can move");
 		} else if (mover.getOwner() != requester) {
 			throw new IllegalArgumentException("You don't own that unit");
 		} else if (!source.equals(actualSource)) {
@@ -144,13 +148,25 @@ public class TPServer {
 		} else if (map.getContents(dest) != null) {
 			// FIXME: What about fixtures (e.g. platforms) that can contain units?
 			throw new IllegalArgumentException("Destination isn't empty");
+		} else if (mover instanceof ProxyUnit) {
+			throw new IllegalArgumentException("Can't move a proxy unit");
 		}
 		// Check that the fixture is actually a unit.
 		map.removeFixture(source);
 		map.setTileContents(dest, mover);
+		final ITileFixture proxyMover = new ProxyUnit((Unit) mover);
 		for (final MapUpdateListener listener : listeners) {
-			// FIXME: Don't expose unit details to other players
-			listener.fixtureMoved(source, dest, mover);
+			if (listener.getPlayer() == requester) {
+				listener.fixtureMoved(source, dest, mover);
+			} else {
+				listener.fixtureMoved(source, dest, proxyMover);
+			}
 		}
+	}
+	/**
+	 * @return whose turn it is
+	 */
+	public int getCurrentPlayer() {
+		return players.peek().intValue();
 	}
 }
