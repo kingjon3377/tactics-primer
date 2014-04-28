@@ -2,6 +2,7 @@ package model;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -97,5 +98,31 @@ public class TPMap implements IMap {
 	 */
 	public void removeFixture(final IPoint point) {
 		contents.remove(point);
+	}
+	/**
+	 * @param id the ID number of a fixture
+	 * @return that fixture
+	 */
+	@Nullable
+	public ITileFixture getFixture(final int id) {
+		for (ITileFixture fix : contents.values()) {
+			if (fix.getID() == id) {
+				return fix;
+			}
+		}
+		return null;
+	}
+	/**
+	 * @param id the ID number of a fixture
+	 * @return its location
+	 */
+	@Nullable
+	public IPoint findFixture(final int id) {
+		for (final Entry<IPoint, ITileFixture> entry : contents.entrySet()) {
+			if (entry.getValue().getID() == id) {
+				return entry.getKey();
+			}
+		}
+		return null;
 	}
 }
