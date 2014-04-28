@@ -55,4 +55,9 @@ public interface MapUpdateListener {
 	 * @param fix the fixture that is moving
 	 */
 	void fixtureMoved(IPoint source, IPoint dest, ITileFixture fix);
+	/**
+	 * Handle the end of a turn.
+	 * @param player the number of the player whose turn it is.
+	 */
+	void endTurn(int player);
 }
