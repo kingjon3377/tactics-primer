@@ -8,10 +8,10 @@ import java.util.LinkedList;
 /**
  * A sample (?) "player" process.
  * @author Clem Hasselbach (original)
- * @author Jonathan Lovelace (cleanups, docs)
+ * @author Jonathan Lovelace (cleanups, docs, adapting to fit my needs)
  *
  */
-public class GamePlayerProcess1 extends Thread {
+public class ServerClientHandler extends Thread {
 	/**
 	 * The connection to the server.
 	 */
@@ -65,7 +65,7 @@ public class GamePlayerProcess1 extends Thread {
 	 * Either immediately return the next message in the queue (popping it) or,
 	 * if the queue is empty, wait for a new message to enter and then pop and
 	 * return it.
-	 * 
+	 *
 	 * @return the message
 	 */
 	public synchronized Object get() {
@@ -89,12 +89,12 @@ public class GamePlayerProcess1 extends Thread {
 	 * @param m the server that owns us
 	 * @param me our index (into what?)
 	 */
-	public GamePlayerProcess1(final Socket s, final GameServer m, final int me) {
+	public ServerClientHandler(final Socket s, final GameServer m, final int me) {
 		socket = s;
 		myIndex = me;
 		mom = m; // Mother GameServer Task
 	}
-	
+
 	/**
 	 * The main loop of the thread. Starts up a subthread to read from the
 	 * socket, then read messages from the queue (blocking if empty) and write
