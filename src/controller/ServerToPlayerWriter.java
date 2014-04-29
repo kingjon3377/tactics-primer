@@ -56,13 +56,19 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 		continueFlag = false;
 		notify();
 	}
+
 	/**
 	 * Queue a message.
-	 * @param message the message to queue.
+	 *
+	 * @param message
+	 *            the message to queue. Marked as nullable because Eclipse
+	 *            doesn't know that String.format can't return null.
 	 */
-	public void queue(final String message) {
-		messages.add(message);
-		notify();
+	public void queue(@Nullable final String message) {
+		if (message != null) {
+			messages.add(message);
+			notify();
+		}
 	}
 	/**
 	 * Either immediately return the next message in the queue (popping it) or,
@@ -150,19 +156,32 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 			throw new IllegalStateException("FIXME: Not yet implemented");
 		}
 	}
+	/**
+	 * @param point the location of the fixture to remove
+	 * @param fix the fixture to remove
+	 */
 	@Override
 	public void fixtureRemoved(final IPoint point, final ITileFixture fix) {
-		// FIXME: Not yet implemented
-		throw new IllegalStateException("FIXME: Not yet implemented");
+		queue(String.format("REMOVE %d %d %d", point.getRow(),
+				point.getColumn(), fix.getID()));
 	}
+	/**
+	 * @param source the location the fixture moves from
+	 * @param dest the location the fixture moves to
+	 * @param fix the fixture that is moving
+	 */
 	@Override
-	public void fixtureMoved(final IPoint source, final IPoint dest, final ITileFixture fix) {
-		// FIXME: Not yet implemented
-		throw new IllegalStateException("FIXME: Not yet implemented");
+	public void fixtureMoved(final IPoint source, final IPoint dest,
+			final ITileFixture fix) {
+		queue(String.format("MOVE %d %d %d %d %d", fix.getID(),
+				source.getRow(), source.getColumn(), dest.getRow(),
+				dest.getColumn()));
 	}
+	/**
+	 * @param playr the player whose turn it is now
+	 */
 	@Override
-	public void endTurn(final int player) {
-		// FIXME: Not yet implemented
-		throw new IllegalStateException("FIXME: Not yet implemented");
+	public void endTurn(final int playr) {
+		queue(String.format("TURN %d", playr));
 	}
 }
