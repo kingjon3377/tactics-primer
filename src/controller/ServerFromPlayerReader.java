@@ -49,7 +49,8 @@ public class ServerFromPlayerReader extends Thread {
 	 * @param outHopper The output hopper into which to put the output of commands
 	 */
 	public ServerFromPlayerReader(final Socket sock,
-			final ServerAPIAdapter adapter, final int ind, final ServerToPlayerWriter outHopper) {
+			final ServerAPIAdapter adapter, final int ind,
+			final ServerToPlayerWriter outHopper) {
 		socket = sock;
 		api = adapter;
 		index = ind;
@@ -70,6 +71,7 @@ public class ServerFromPlayerReader extends Thread {
 							final String[] command =
 									((String) input).toLowerCase().split(" ");
 							player = Integer.parseInt(command[1]);
+							out.queue("ACK");
 						} else {
 							out.queue("Need PLAYER command first");
 						}
