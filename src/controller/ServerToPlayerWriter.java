@@ -2,10 +2,19 @@ package controller;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import model.IPoint;
+import model.ITileFixture;
+import model.ProxyUnit;
+import model.TileType;
+
 import org.eclipse.jdt.annotation.Nullable;
+
+import common.MapUpdateListener;
 
 /**
  * A thread to send replies and game-state updates to clients.
@@ -13,7 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Clem Hasselbach (original of code from which this is adapted)
  * @author Jonathan Lovelace (cleanups, docs, adaptation to fit our needs here)
  */
-public class ServerToPlayerWriter extends Thread {
+public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	/**
 	 * The connection to the server.
 	 */
@@ -99,5 +108,61 @@ public class ServerToPlayerWriter extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	/**
+	 * @return which player we're connected to
+	 */
+	@Override
+	public int getPlayer() {
+		return player;
+	}
+	/**
+	 * @param point the point where the terrain changed
+	 * @param type the new terrain there
+	 */
+	@Override
+	public void terrainChanged(final IPoint point, final TileType type) {
+		queue(String.format("TERRAIN %d %d %d", point.getRow(),
+				point.getColumn(), type.ordinal()));
+	}
+	/**
+	 * @param point the location of the new fixture
+	 * @param fix the fixture added
+	 */
+	@Override
+	public void fixtureAdded(final IPoint point, final ITileFixture fix) {
+		if (fix instanceof ProxyUnit) {
+			try {
+				queue(String.format("OPPUNIT %d %d %d %s %d %c %s %d %d %d",
+						point.getRow(), point.getColumn(), fix.getID(),
+						URLEncoder.encode(fix.getDescription(), "C"),
+						fix.getOwner(), fix.getCharacter(),
+						URLEncoder.encode(fix.getImage(), "C"),
+						((ProxyUnit) fix).getHealthTier().ordinal(),
+						((ProxyUnit) fix).getTotalAttackDice(),
+						((ProxyUnit) fix).getTotalRangedAttackDice()));
+			} catch (UnsupportedEncodingException e) {
+				// FIXME: Not yet implemented
+				throw new IllegalStateException("FIXME: Not yet implemented");
+			}
+		} else {
+			// FIXME: Not yet implemented
+			throw new IllegalStateException("FIXME: Not yet implemented");
+		}
+	}
+	@Override
+	public void fixtureRemoved(final IPoint point, final ITileFixture fix) {
+		// FIXME: Not yet implemented
+		throw new IllegalStateException("FIXME: Not yet implemented");
+	}
+	@Override
+	public void fixtureMoved(final IPoint source, final IPoint dest, final ITileFixture fix) {
+		// FIXME: Not yet implemented
+		throw new IllegalStateException("FIXME: Not yet implemented");
+	}
+	@Override
+	public void endTurn(final int player) {
+		// FIXME: Not yet implemented
+		throw new IllegalStateException("FIXME: Not yet implemented");
 	}
 }
