@@ -45,12 +45,24 @@ public class ServerClientManager extends Thread {
 				new ServerFromPlayerReader(socket, api, player, writer);
 		writer.start();
 		reader.start();
+		api.addMapUpdateListener(writer);
 		while (writer.isAlive() && reader.isAlive()) {
 			try {
 				writer.join();
 			} catch (InterruptedException e) {
 				continue;
 			}
+		}
+		api.removeMapUpdateListener(writer);
+		try {
+			writer.join();
+		} catch (InterruptedException e) {
+			// Do nothing.
+		}
+		try {
+			reader.join();
+		} catch (InterruptedException e) {
+			// Do nothing.
 		}
 		try {
 			socket.close();
