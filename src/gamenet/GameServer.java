@@ -30,7 +30,7 @@ class GameServer extends Thread {
 	/**
 	 * Connections to clients?
 	 */
-	private final LinkedList<GamePlayerProcess1> gamePlayers =
+	private final LinkedList<ServerClientHandler> gamePlayers =
 			new LinkedList<>();
 	/**
 	 * The port number of the server.
@@ -101,7 +101,7 @@ class GameServer extends Thread {
 	 * @param ob a message to send to all "players".
 	 */
 	public synchronized void putOutputMsgs(final Object ob) {
-		for (final GamePlayerProcess1 p : gamePlayers) {
+		for (final ServerClientHandler p : gamePlayers) {
 			p.put(ob);
 		}
 	}
@@ -109,7 +109,7 @@ class GameServer extends Thread {
 	 * @param index the index of a "player" to remove.
 	 */
 	public synchronized void removeMe(final int index) {
-		for (final GamePlayerProcess1 c : gamePlayers) {
+		for (final ServerClientHandler c : gamePlayers) {
 			if (index == c.getIndex()) {
 				c.stopGamePlayer();
 				gamePlayers.remove(c);
@@ -156,8 +156,8 @@ class GameServer extends Thread {
 				System.out.println(nThreadCount + " Another Thread Created");
 
 				// Create a thread to process incoming connection
-				GamePlayerProcess1 gamePlayerChild =
-						new GamePlayerProcess1(nextSock, this, nThreadCount++);
+				ServerClientHandler gamePlayerChild =
+						new ServerClientHandler(nextSock, this, nThreadCount++);
 				gamePlayers.add(gamePlayerChild);
 				gamePlayerChild.start();
 			}
@@ -181,7 +181,7 @@ class GameServer extends Thread {
 		// Go in the inverse order because we are removing entries from
 		// the list.
 		for (int i = gamePlayers.size() - 1; i >= 0; i--) {
-			GamePlayerProcess1 p = gamePlayers.remove(i);
+			ServerClientHandler p = gamePlayers.remove(i);
 			p.stopGamePlayer();
 		}
 	}
