@@ -2,6 +2,8 @@ package controller;
 
 import model.Point;
 
+import common.MapUpdateListener;
+
 /**
  * An adapter to turn clients' RPC language into API calls to the server object.
  *
@@ -60,5 +62,19 @@ public class ServerAPIAdapter {
 		} catch (IllegalArgumentException except) {
 			return "ERROR " + except.getMessage();
 		}
+	}
+	/**
+	 * Add a listener to the server.
+	 * @param listener the listener to add
+	 */
+	public void addMapUpdateListener(final MapUpdateListener listener) {
+		server.addMapUpdateListener(listener);
+	}
+	/**
+	 * Remove a listener from the server.
+	 * @param listener the listener to remove
+	 */
+	public void removeMapUpdateListener(final MapUpdateListener listener) {
+		server.removeMapUpdateListener(listener);
 	}
 }
