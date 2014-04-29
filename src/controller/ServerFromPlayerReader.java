@@ -39,7 +39,7 @@ public class ServerFromPlayerReader extends Thread {
 	 */
 	private final ServerToPlayerWriter out;
 	/**
-	 * Whether we should continue to read
+	 * Whether we should continue to read.
 	 */
 	private boolean shouldContinue = true;
 	/**
@@ -65,7 +65,17 @@ public class ServerFromPlayerReader extends Thread {
 			Object input;
 			while (shouldContinue && (input = in.readObject()) != null) {
 				if (input instanceof String) {
-					out.queue(api.process((String) input, index));
+					if (player == -2) {
+						if (((String) input).toLowerCase().startsWith("player ")) {
+							final String[] command =
+									((String) input).toLowerCase().split(" ");
+							player = Integer.parseInt(command[1]);
+						} else {
+							out.queue("Need PLAYER command first");
+						}
+					} else {
+						out.queue(api.process((String) input, index));
+					}
 				} else {
 					out.queue("We only accept String inputs");
 				}
@@ -77,13 +87,6 @@ public class ServerFromPlayerReader extends Thread {
 			} catch (IOException except) {
 			LOGGER.log(Level.SEVERE, "I/O error in dealing with player "
 					+ index, except);
-			} finally {
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 			}
 	}
 	/**
