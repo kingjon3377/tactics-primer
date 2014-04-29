@@ -1,11 +1,13 @@
 package controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import model.IMap;
 import model.IPoint;
 import model.ITileFixture;
 import model.ProxyUnit;
@@ -168,5 +170,30 @@ public class TPServer {
 	 */
 	public int getCurrentPlayer() {
 		return players.peek().intValue();
+	}
+	/**
+	 * Note that this is a fairly expensive operation, so we expect it to
+	 * usually be called once per client.
+	 *
+	 * @param player
+	 *            a player number
+	 * @return a view of the map for that player.
+	 */
+	public IMap getPlayerMap(final int player) {
+		final Map<IPoint, TileType> terrain = new HashMap<>();
+		final Map<IPoint, ITileFixture> fixtures = new HashMap<>();
+		for (final IPoint point : map) {
+			if (point == null) {
+				continue;
+			}
+			terrain.put(point, map.getTerrain(point));
+			final ITileFixture fix = map.getContents(point);
+			if (fix instanceof Unit && player != fix.getOwner()) {
+				fixtures.put(point, new ProxyUnit((Unit) fix));
+			} else if (fix != null) {
+				fixtures.put(point, fix);
+			}
+		}
+		return new TPMap(terrain, fixtures);
 	}
 }
