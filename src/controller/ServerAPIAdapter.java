@@ -8,7 +8,7 @@ import model.Point;
  * @author Jonathan Lovelace
  *
  */
-public class ServerClientAdapter {
+public class ServerAPIAdapter {
 	/**
 	 * The server we wrap.
 	 */
@@ -20,7 +20,7 @@ public class ServerClientAdapter {
 	 * @param serv
 	 *            the server to wrap
 	 */
-	public ServerClientAdapter(final TPServer serv) {
+	public ServerAPIAdapter(final TPServer serv) {
 		server = serv;
 	}
 
