@@ -1,0 +1,9 @@
+[patterns]                                                                                                                              
+**.java = native
+**.class = BIN
+**.gif = BIN
+**.txt = native
+**.txt.expected = native
+**.md = native
+**.png = BIN
+** = native
