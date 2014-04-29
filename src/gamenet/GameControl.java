@@ -1,5 +1,7 @@
 package gamenet;
 
+import java.net.UnknownHostException;
+
 /**
  * The <b>GameControl</b> class provides the overall framework for gameNet. This
  * class has a constructor for starting up a server to host a game. Another
@@ -48,9 +50,13 @@ public class GameControl {
 	/**
 	 * This constructor is used when everything is on the same computer and you
 	 * aren't needing to network.
-	 * @param gc the "game creator" to set up the game?
+	 *
+	 * @param gc
+	 *            the "game creator" to set up the game?
+	 * @throws UnknownHostException
+	 *             if the local host cannnot be resolved to an address
 	 */
-	public GameControl(final GameCreator gc) {
+	public GameControl(final GameCreator gc) throws UnknownHostException {
 		gameCreator = gc;
 		try {
 			coreGame = gameCreator.createGame();
