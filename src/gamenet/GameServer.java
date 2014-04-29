@@ -4,11 +4,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 /**
  * A thread for the server.
- * 
+ *
  * @author Clem Hasselbach (original)
  * @author Jonathan Lovelace (cleanups, docs)
  */
@@ -16,12 +17,12 @@ class GameServer extends Thread {
 	/**
 	 * The address of the server.
 	 */
-	private String inetAddress = null;
-	
+	private final String inetAddress;
+
 	/**
 	 * This should really use one of Java's built-in classes that represents an
 	 * IP address ...
-	 * 
+	 *
 	 * @return the address of the server
 	 */
 	public String getInetAddress() {
@@ -66,7 +67,7 @@ class GameServer extends Thread {
 		System.out.println(" getPortNum = " + portNum);
 		return portNum;
 	}
-	
+
 	/**
 	 * Mark that the server has started, and wake up every thread that is
 	 * waiting on us.
@@ -77,10 +78,18 @@ class GameServer extends Thread {
 		notifyAll();
 	}
 	/**
+	 *  We had set up inetAddress in run(), with the comment
+	 * "Make the server available to callers", but code calling getInetAddress
+	 * isn't null-safe.
+	 *
+	 * @throws UnknownHostException
+	 *             if the local host can't be resolved to an address
 	 * @param port the port to listen on
 	 * @param gi the game-logic part of the server
 	 */
-	public GameServer(final int port, final GameNetCoreGame gi) {
+	public GameServer(final int port, final GameNetCoreGame gi)
+			throws UnknownHostException {
+		inetAddress = InetAddress.getLocalHost().getHostAddress();
 		portNum = port;
 		coreGame = gi;
 	}
@@ -141,10 +150,6 @@ class GameServer extends Thread {
 									+ portNum);
 				}
 			}
-			final InetAddress iaddr = InetAddress.getLocalHost();
-
-			// Make the server available to callers
-			inetAddress = iaddr.getHostAddress();
 			// Make port available sooner even if it is being timed out.
 			serverSocket.setReuseAddress(true);
 

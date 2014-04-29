@@ -1,15 +1,16 @@
 package gamenet;
 
+import java.net.UnknownHostException;
 import java.util.Scanner;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * An abstract class for setting up a game?
- * 
+ *
  * @author Clem Hasselbach (original)
  * @author Jonathan Lovelace (cleanups, docs)
- * 
+ *
  */
 @NonNullByDefault
 public abstract class GameCreator {
@@ -20,11 +21,14 @@ public abstract class GameCreator {
 
 	/**
 	 * Set up a game, using the logic from the subclass.
-	 * 
+	 *
 	 * @param ui
 	 *            the "user interface" object (?)
+	 * @throws UnknownHostException
+	 *             if the local host cannot be resolved to an address
 	 */
-	public void enterGame(final GameNetUserInterface ui) {
+	public void enterGame(final GameNetUserInterface ui)
+			throws UnknownHostException {
 
 		try (final Scanner keyboard = new Scanner(System.in)) {
 			System.out.print("Enter your name:\t");
