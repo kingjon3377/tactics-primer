@@ -127,5 +127,28 @@ public class SimpleUnit implements Unit {
 			return HealthTier.Hale;
 		}
 	}
-
+	/**
+	 * @return the maximum HP of the unit
+	 */
+	public int getMaxHP() {
+		return maxHP;
+	}
+	/**
+	 * @return the current HP of the unit
+	 */
+	public int getCurrHP() {
+		return currHP;
+	}
+	/**
+	 * @return the die used for melee combat
+	 */
+	public int getMeleeDie() {
+		return meleeDie;
+	}
+	/**
+	 * @return the die used for ranged combat
+	 */
+	public int getRangedDie() {
+		return rangedDie;
+	}
 }
