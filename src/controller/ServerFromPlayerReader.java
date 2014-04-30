@@ -8,6 +8,9 @@ import java.util.logging.Logger;
 
 import protocol.AcknowledgedMessage;
 import protocol.PlayerPresentMessage;
+import protocol.PlayerRequestMessage;
+import protocol.ProtocolErrorMessage;
+import protocol.RPCMessage;
 
 /**
  * A thread to read input from a client.
@@ -31,10 +34,6 @@ public class ServerFromPlayerReader extends Thread {
 	 * The socket connecting to the client.
 	 */
 	private final Socket socket;
-	/**
-	 * Our index in the table of threads.
-	 */
-	private final int index;
 	/**
 	 * Which player we are handling.
 	 */
@@ -63,7 +62,6 @@ public class ServerFromPlayerReader extends Thread {
 			final ServerToPlayerWriter outHopper) {
 		socket = sock;
 		api = adapter;
-		index = ind;
 		out = outHopper;
 	}
 
@@ -76,37 +74,40 @@ public class ServerFromPlayerReader extends Thread {
 				new ObjectInputStream(socket.getInputStream())) {
 			Object input;
 			while (shouldContinue && (input = in.readObject()) != null) {
-				if (input instanceof String) {
+				if (input instanceof RPCMessage) {
 					if (player == -2) {
-						if (((String) input).toLowerCase()
-								.startsWith("player ")) {
-							final String[] command =
-									((String) input).toLowerCase().split(" ");
-							int localPlayer = Integer.parseInt(command[1]);
+						if (input instanceof PlayerRequestMessage) {
 							try {
-								api.addPlayer(localPlayer);
+								api.addPlayer(((PlayerRequestMessage) input)
+										.getNumber());
 							} catch (IllegalArgumentException e) {
-								out.queue(new PlayerPresentMessage(localPlayer));
+								out.queue(new PlayerPresentMessage(
+										((PlayerRequestMessage) input)
+												.getNumber()));
 								continue;
 							}
+							player = ((PlayerRequestMessage) input).getNumber();
 							out.queue(new AcknowledgedMessage());
 						} else {
-							out.queue("Need PLAYER command first");
+							out.queue(new ProtocolErrorMessage(
+									"Negotiate player number first"));
 						}
 					} else {
-						out.queue(api.process((String) input, index));
+						out.queue(api.process((RPCMessage) input, player));
 					}
 				} else {
-					out.queue("We only accept String inputs");
+					out.queue(new ProtocolErrorMessage(
+							"We onlyaccept RPCMessage inputs"));
 				}
 			}
 		} catch (ClassNotFoundException except) {
-			out.queue("We only accept String inputs");
+			out.queue(new ProtocolErrorMessage(
+					"We onlyaccept RPCMessage inputs"));
 			LOGGER.log(Level.SEVERE, "Class not found in message from player "
-					+ index, except);
+					+ player, except);
 		} catch (IOException except) {
 			LOGGER.log(Level.SEVERE, "I/O error in dealing with player "
-					+ index, except);
+					+ player, except);
 		} finally {
 			api.removePlayer(player);
 		}
