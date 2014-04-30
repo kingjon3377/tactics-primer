@@ -196,4 +196,36 @@ public class TPServer {
 		}
 		return new TPMap(terrain, fixtures);
 	}
+	/**
+	 * Add a fixture. Only the current player may do so.
+	 * @param requester the player who wants to add the fixture
+	 * @param point where to add the fixture
+	 * @param fix the fixture to add
+	 */
+	public void addFixture(final int requester, final IPoint point,
+			final ITileFixture fix) {
+		if (players.peek().intValue() != requester) {
+			throw new IllegalArgumentException("Not your turn");
+		} else if (map.getContents(point) != null) {
+			throw new IllegalArgumentException("Something already there");
+		} else if (fix instanceof ProxyUnit) {
+			throw new IllegalArgumentException(
+					"Proxy units not allowed in server map");
+		} else {
+			map.setTileContents(point, fix);
+			final ITileFixture proxy;
+			if (fix instanceof Unit) {
+				proxy = new ProxyUnit((Unit) fix);
+			} else {
+				proxy = fix;
+			}
+			for (final MapUpdateListener listener : listeners) {
+				if (listener.getPlayer() == players.peek().intValue()) {
+					listener.fixtureAdded(point, fix);
+				} else {
+					listener.fixtureAdded(point, proxy);
+				}
+			}
+		}
+	}
 }
