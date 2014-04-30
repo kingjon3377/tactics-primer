@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import protocol.AcknowledgedMessage;
+import protocol.FixtureMoveMessage;
+import protocol.FixtureRemovalMessage;
 import protocol.OpposingUnitMessage;
 import protocol.OwnUnitMessage;
+import protocol.PlayerPresentMessage;
+import protocol.ProtocolErrorMessage;
 import protocol.RPCMessage;
+import protocol.TerrainChangeMessage;
 import protocol.TurnEndMessage;
 import view.TPUI;
 
@@ -76,6 +82,23 @@ public class ClientFromServerReader extends Thread {
 		} else if (message instanceof OwnUnitMessage) {
 			client.addOwnUnit(((OwnUnitMessage) message).getPoint(),
 					((OwnUnitMessage) message).getUnit());
+		} else if (message instanceof AcknowledgedMessage) {
+			client.setPlayerNumber();
+		} else if (message instanceof FixtureMoveMessage) {
+			client.moveFixture(((FixtureMoveMessage) message).getSource(),
+					((FixtureMoveMessage) message).getDest(),
+					((FixtureMoveMessage) message).getMover());
+		} else if (message instanceof FixtureRemovalMessage) {
+			client.removeFixture(((FixtureRemovalMessage) message).getPoint(),
+					((FixtureRemovalMessage) message).getID());
+		} else if (message instanceof PlayerPresentMessage) {
+			client.rejectPlayerNumber();
+		} else if (message instanceof TerrainChangeMessage) {
+			client.changeTerrain(((TerrainChangeMessage) message).getPoint(),
+					((TerrainChangeMessage) message).getType());
+		} else if (message instanceof ProtocolErrorMessage) {
+			ui.showError("Server sent us an error message", new Throwable(
+					((ProtocolErrorMessage) message).getMessage()));
 		} else {
 			ui.showError("Server sent a message we don't know how to handle", null);
 		}

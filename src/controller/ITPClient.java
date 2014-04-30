@@ -3,6 +3,7 @@ package controller;
 import model.IPoint;
 import model.ProxyUnit;
 import model.SimpleUnit;
+import model.TileType;
 
 /**
  * An interface for the non-UI part of the client.
@@ -36,6 +37,22 @@ public interface ITPClient {
 	 */
 	void addOwnUnit(IPoint point, SimpleUnit unit);
 	/**
-	 * Move
+	 * Move a fixture.
+	 * @param source where the unit was located
+	 * @param dest where it is now located
+	 * @param id the ID of the unit
 	 */
+	void moveFixture(IPoint source, IPoint dest, int id);
+	/**
+	 * Remove a fixture.
+	 * @param point where it is located
+	 * @param id its ID
+	 */
+	void removeFixture(IPoint point, int id);
+	/**
+	 * Change the tile type somewhere.
+	 * @param point where to change it
+	 * @param type what to change it to
+	 */
+	void changeTerrain(IPoint point, TileType type);
 }
