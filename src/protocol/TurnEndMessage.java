@@ -6,19 +6,20 @@ package protocol;
  */
 public class TurnEndMessage extends RPCMessage {
 	/**
-	 * Whose turn it is next.
+	 * In server-to-client: Whose turn it is next.
+	 * In client-to-server: whose turn is ending.
 	 */
-	private final int next;
+	private final int player;
 	/**
-	 * @param player whose turn it is next
+	 * @param playr whose turn it is next, or whose turn is ending
 	 */
-	public TurnEndMessage(final int player) {
-		next = player;
+	public TurnEndMessage(final int playr) {
+		player = playr;
 	}
 	/**
-	 * @return whose turn it is next
+	 * @return whose turn it is next or is ending
 	 */
-	public int getNext() {
-		return next;
+	public int getPlayer() {
+		return player;
 	}
 }
