@@ -1,6 +1,10 @@
 package controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import model.Point;
+import model.SimpleUnit;
 
 import common.MapUpdateListener;
 
@@ -54,6 +58,19 @@ public class ServerAPIAdapter {
 						Point.of(Integer.parseInt(command[4]),
 								Integer.parseInt(command[5])));
 				return "ACK";
+			case "unit":
+				server.addFixture(
+						player,
+						Point.of(Integer.parseInt(command[1]),
+								Integer.parseInt(command[2])),
+						new SimpleUnit(IDFactory.FACTORY.createID(), player,
+								URLDecoder.decode(command[3], "C"), '@',
+								"unit.png", Integer.parseInt(command[4]),
+								Integer.parseInt(command[5]), Integer
+										.parseInt(command[6]), Integer
+										.parseInt(command[7]), Integer
+										.parseInt(command[8])));
+				return "ACK";
 			default:
 				return "UNKNOWN";
 			}
@@ -61,6 +78,8 @@ public class ServerAPIAdapter {
 			return "MALFORMED " + except.getMessage();
 		} catch (IllegalArgumentException except) {
 			return "ERROR " + except.getMessage();
+		} catch (UnsupportedEncodingException except) {
+			return "SERVERERROR " + except.getMessage();
 		}
 	}
 	/**
