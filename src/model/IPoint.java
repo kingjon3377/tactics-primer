@@ -1,11 +1,13 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * An interface for the location of a tile.
  * @author Jonathan Lovelace
  *
  */
-public interface IPoint {
+public interface IPoint extends Serializable {
 
 	/**
 	 * @return the row of the tile

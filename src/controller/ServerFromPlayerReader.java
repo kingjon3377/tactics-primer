@@ -6,6 +6,9 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import protocol.AcknowledgedMessage;
+import protocol.PlayerPresentMessage;
+
 /**
  * A thread to read input from a client.
  *
@@ -83,10 +86,10 @@ public class ServerFromPlayerReader extends Thread {
 							try {
 								api.addPlayer(localPlayer);
 							} catch (IllegalArgumentException e) {
-								out.queue("INUSE");
+								out.queue(new PlayerPresentMessage(localPlayer));
 								continue;
 							}
-							out.queue("ACK");
+							out.queue(new AcknowledgedMessage());
 						} else {
 							out.queue("Need PLAYER command first");
 						}
