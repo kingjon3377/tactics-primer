@@ -1,11 +1,24 @@
 package controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import model.IMap;
+import model.IPoint;
+import model.ITileFixture;
+import model.ProxyUnit;
 import model.SimpleUnit;
 import protocol.AcknowledgedMessage;
 import protocol.ClientFixtureMessage;
 import protocol.FixtureMoveMessage;
+import protocol.FixtureRemovalMessage;
+import protocol.FullMapRequestMessage;
+import protocol.MultiMessageMessage;
+import protocol.OpposingUnitMessage;
+import protocol.OwnUnitMessage;
 import protocol.ProtocolErrorMessage;
 import protocol.RPCMessage;
+import protocol.TerrainChangeMessage;
 import protocol.TurnEndMessage;
 
 import common.MapUpdateListener;
@@ -70,6 +83,28 @@ public class ServerAPIAdapter {
 				default:
 					return new ProtocolErrorMessage("Unknown fixture type");
 				}
+			} else if (cmd instanceof FullMapRequestMessage) {
+				final IMap map =
+						server.getPlayerMap(((FullMapRequestMessage) cmd)
+								.getPlayer());
+				final List<RPCMessage> messages = new ArrayList<>();
+				for (final IPoint point : map) {
+					messages.add(new TerrainChangeMessage(point, map
+							.getTerrain(point)));
+					ITileFixture fix = map.getContents(point);
+					if (fix == null) {
+						messages.add(new FixtureRemovalMessage(point, -1));
+					} else if (fix instanceof ProxyUnit) {
+						messages.add(new OpposingUnitMessage(point,
+								(ProxyUnit) fix));
+					} else if (fix instanceof SimpleUnit) {
+						messages.add(new OwnUnitMessage(point, (SimpleUnit) fix));
+					} else {
+						messages.add(new ProtocolErrorMessage(
+								"Map contains untransmitted fixture"));
+					}
+				}
+				return new MultiMessageMessage(messages);
 			} else {
 				return new ProtocolErrorMessage("Unknown command");
 			}

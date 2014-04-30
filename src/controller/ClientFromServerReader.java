@@ -103,4 +103,10 @@ public class ClientFromServerReader extends Thread {
 			ui.showError("Server sent a message we don't know how to handle", null);
 		}
 	}
+	/**
+	 * Stop reading.
+	 */
+	public void stopReading() {
+		continueFlag = false;
+	}
 }

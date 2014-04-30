@@ -15,6 +15,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import protocol.FixtureMoveMessage;
 import protocol.FixtureRemovalMessage;
+import protocol.MultiMessageMessage;
 import protocol.OpposingUnitMessage;
 import protocol.OwnUnitMessage;
 import protocol.RPCMessage;
@@ -77,7 +78,11 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 *            doesn't know that String.format can't return null.
 	 */
 	public void queue(@Nullable final RPCMessage message) {
-		if (message != null) {
+		if (message instanceof MultiMessageMessage) {
+			for (RPCMessage msg : (MultiMessageMessage) message) {
+				queue(msg);
+			}
+		} else if (message != null) {
 			messages.add(message);
 			notify();
 		}
@@ -110,9 +115,6 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	/**
 	 * The main loop of the thread. Reads messages from the queue (blocking if
 	 * empty) and writes them to the socket.
-	 *
-	 * FIXME: The class that starts us and the reader thread should manage the
-	 * socket, not us.
 	 */
 	@Override
 	public void run() {
