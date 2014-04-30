@@ -2,9 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
-import java.net.URLEncoder;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import model.IPoint;
@@ -14,6 +12,14 @@ import model.SimpleUnit;
 import model.TileType;
 
 import org.eclipse.jdt.annotation.Nullable;
+
+import protocol.FixtureMoveMessage;
+import protocol.FixtureRemovalMessage;
+import protocol.OpposingUnitMessage;
+import protocol.OwnUnitMessage;
+import protocol.RPCMessage;
+import protocol.TerrainChangeMessage;
+import protocol.TurnEndMessage;
 
 import common.MapUpdateListener;
 
@@ -39,7 +45,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	/**
 	 * Messages to send.
 	 */
-	private final ConcurrentLinkedQueue<String> messages =
+	private final ConcurrentLinkedQueue<RPCMessage> messages =
 			new ConcurrentLinkedQueue<>();
 
 	/**
@@ -70,7 +76,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 *            the message to queue. Marked as nullable because Eclipse
 	 *            doesn't know that String.format can't return null.
 	 */
-	public void queue(@Nullable final String message) {
+	public void queue(@Nullable final RPCMessage message) {
 		if (message != null) {
 			messages.add(message);
 			notify();
@@ -85,7 +91,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 * @return the message, or none if we should stop
 	 */
 	@Nullable
-	private synchronized String get() {
+	private synchronized RPCMessage get() {
 		while (continueFlag) {
 			if (messages.isEmpty()) {
 				try {
@@ -94,7 +100,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 					continue;
 				}
 			} else {
-				final String retval = messages.remove();
+				final RPCMessage retval = messages.remove();
 				return retval;
 			}
 		}
@@ -112,7 +118,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	public void run() {
 		try (ObjectOutputStream out =
 				new ObjectOutputStream(socket.getOutputStream())) {
-			String message;
+			RPCMessage message;
 			while (continueFlag && (message = get()) != null) {
 				out.writeObject(message);
 				out.flush();
@@ -140,8 +146,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 */
 	@Override
 	public void terrainChanged(final IPoint point, final TileType type) {
-		queue(String.format("TERRAIN %d %d %d", point.getRow(),
-				point.getColumn(), type.ordinal()));
+		queue(new TerrainChangeMessage(point, type));
 	}
 
 	/**
@@ -152,33 +157,11 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 */
 	@Override
 	public void fixtureAdded(final IPoint point, final ITileFixture fix) {
-		try {
-			if (fix instanceof ProxyUnit) {
-				queue(String.format("OPPUNIT %d %d %d %s %d %c %s %d %d %d",
-						point.getRow(), point.getColumn(), fix.getID(),
-						URLEncoder.encode(fix.getDescription(), "C"),
-						fix.getOwner(), fix.getCharacter(),
-						URLEncoder.encode(fix.getImage(), "C"),
-						((ProxyUnit) fix).getHealthTier().ordinal(),
-						((ProxyUnit) fix).getTotalAttackDice(),
-						((ProxyUnit) fix).getTotalRangedAttackDice()));
-			} else if (fix instanceof SimpleUnit) {
-				queue(String.format(
-						"OWNUNIT %d %d %d %s %c %s %d %d %d %d %d %d",
-						point.getRow(), point.getColumn(), fix.getID(),
-						URLEncoder.encode(fix.getDescription(), "C"),
-						fix.getCharacter(),
-						URLEncoder.encode(fix.getImage(), "C"),
-						((SimpleUnit) fix).getMaxHP(),
-						((SimpleUnit) fix).getMeleeDie(),
-						((SimpleUnit) fix).getTotalAttackDice(),
-						((SimpleUnit) fix).getRangedDie(),
-						((SimpleUnit) fix).getTotalRangedAttackDice()));
-			} else {
-				// FIXME: Not yet implemented
-				throw new IllegalStateException("FIXME: Not yet implemented");
-			}
-		} catch (UnsupportedEncodingException e) {
+		if (fix instanceof ProxyUnit) {
+			queue(new OpposingUnitMessage(point, (ProxyUnit) fix));
+		} else if (fix instanceof SimpleUnit) {
+			queue(new OwnUnitMessage(point, (SimpleUnit) fix));
+		} else {
 			// FIXME: Not yet implemented
 			throw new IllegalStateException("FIXME: Not yet implemented");
 		}
@@ -192,8 +175,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 */
 	@Override
 	public void fixtureRemoved(final IPoint point, final ITileFixture fix) {
-		queue(String.format("REMOVE %d %d %d", point.getRow(),
-				point.getColumn(), fix.getID()));
+		queue(new FixtureRemovalMessage(point, fix.getID()));
 	}
 
 	/**
@@ -207,9 +189,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	@Override
 	public void fixtureMoved(final IPoint source, final IPoint dest,
 			final ITileFixture fix) {
-		queue(String.format("MOVE %d %d %d %d %d", fix.getID(),
-				source.getRow(), source.getColumn(), dest.getRow(),
-				dest.getColumn()));
+		queue(new FixtureMoveMessage(source, dest, fix.getID()));
 	}
 
 	/**
@@ -218,6 +198,6 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 */
 	@Override
 	public void endTurn(final int playr) {
-		queue(String.format("TURN %d", playr));
+		queue(new TurnEndMessage(playr));
 	}
 }
