@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import model.IPoint;
 import model.ITileFixture;
 import model.ProxyUnit;
+import model.SimpleUnit;
 import model.TileType;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,15 +41,20 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 */
 	private final ConcurrentLinkedQueue<String> messages =
 			new ConcurrentLinkedQueue<>();
+
 	/**
 	 * Constructor.
-	 * @param sock the socket connecting us to the client
-	 * @param index the number of the player we're handling
+	 *
+	 * @param sock
+	 *            the socket connecting us to the client
+	 * @param index
+	 *            the number of the player we're handling
 	 */
 	public ServerToPlayerWriter(final Socket sock, final int index) {
 		socket = sock;
 		player = index;
 	}
+
 	/**
 	 * Stop this thread at the next opportunity.
 	 */
@@ -70,10 +76,12 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 			notify();
 		}
 	}
+
 	/**
 	 * Either immediately return the next message in the queue (popping it) or,
 	 * if the queue is empty, wait for the next message to be placed in it and
 	 * then pop and return that.
+	 *
 	 * @return the message, or none if we should stop
 	 */
 	@Nullable
@@ -115,6 +123,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 			e.printStackTrace();
 		}
 	}
+
 	/**
 	 * @return which player we're connected to
 	 */
@@ -122,23 +131,29 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	public int getPlayer() {
 		return player;
 	}
+
 	/**
-	 * @param point the point where the terrain changed
-	 * @param type the new terrain there
+	 * @param point
+	 *            the point where the terrain changed
+	 * @param type
+	 *            the new terrain there
 	 */
 	@Override
 	public void terrainChanged(final IPoint point, final TileType type) {
 		queue(String.format("TERRAIN %d %d %d", point.getRow(),
 				point.getColumn(), type.ordinal()));
 	}
+
 	/**
-	 * @param point the location of the new fixture
-	 * @param fix the fixture added
+	 * @param point
+	 *            the location of the new fixture
+	 * @param fix
+	 *            the fixture added
 	 */
 	@Override
 	public void fixtureAdded(final IPoint point, final ITileFixture fix) {
-		if (fix instanceof ProxyUnit) {
-			try {
+		try {
+			if (fix instanceof ProxyUnit) {
 				queue(String.format("OPPUNIT %d %d %d %s %d %c %s %d %d %d",
 						point.getRow(), point.getColumn(), fix.getID(),
 						URLEncoder.encode(fix.getDescription(), "C"),
@@ -147,28 +162,47 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 						((ProxyUnit) fix).getHealthTier().ordinal(),
 						((ProxyUnit) fix).getTotalAttackDice(),
 						((ProxyUnit) fix).getTotalRangedAttackDice()));
-			} catch (UnsupportedEncodingException e) {
+			} else if (fix instanceof SimpleUnit) {
+				queue(String.format(
+						"OWNUNIT %d %d %d %s %c %s %d %d %d %d %d %d",
+						point.getRow(), point.getColumn(), fix.getID(),
+						URLEncoder.encode(fix.getDescription(), "C"),
+						fix.getCharacter(),
+						URLEncoder.encode(fix.getImage(), "C"),
+						((SimpleUnit) fix).getMaxHP(),
+						((SimpleUnit) fix).getMeleeDie(),
+						((SimpleUnit) fix).getTotalAttackDice(),
+						((SimpleUnit) fix).getRangedDie(),
+						((SimpleUnit) fix).getTotalRangedAttackDice()));
+			} else {
 				// FIXME: Not yet implemented
 				throw new IllegalStateException("FIXME: Not yet implemented");
 			}
-		} else {
+		} catch (UnsupportedEncodingException e) {
 			// FIXME: Not yet implemented
 			throw new IllegalStateException("FIXME: Not yet implemented");
 		}
 	}
+
 	/**
-	 * @param point the location of the fixture to remove
-	 * @param fix the fixture to remove
+	 * @param point
+	 *            the location of the fixture to remove
+	 * @param fix
+	 *            the fixture to remove
 	 */
 	@Override
 	public void fixtureRemoved(final IPoint point, final ITileFixture fix) {
 		queue(String.format("REMOVE %d %d %d", point.getRow(),
 				point.getColumn(), fix.getID()));
 	}
+
 	/**
-	 * @param source the location the fixture moves from
-	 * @param dest the location the fixture moves to
-	 * @param fix the fixture that is moving
+	 * @param source
+	 *            the location the fixture moves from
+	 * @param dest
+	 *            the location the fixture moves to
+	 * @param fix
+	 *            the fixture that is moving
 	 */
 	@Override
 	public void fixtureMoved(final IPoint source, final IPoint dest,
@@ -177,8 +211,10 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 				source.getRow(), source.getColumn(), dest.getRow(),
 				dest.getColumn()));
 	}
+
 	/**
-	 * @param playr the player whose turn it is now
+	 * @param playr
+	 *            the player whose turn it is now
 	 */
 	@Override
 	public void endTurn(final int playr) {

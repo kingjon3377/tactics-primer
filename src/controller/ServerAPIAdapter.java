@@ -96,4 +96,18 @@ public class ServerAPIAdapter {
 	public void removeMapUpdateListener(final MapUpdateListener listener) {
 		server.removeMapUpdateListener(listener);
 	}
+	/**
+	 * Add a player to the map.
+	 * @param player the player to add
+	 */
+	public void addPlayer(final int player) {
+		server.addPlayer(player);
+	}
+	/**
+	 * Remove a player from the map.
+	 * @param player the player to remove
+	 */
+	public void removePlayer(final int player) {
+		server.removePlayer(player);
+	}
 }

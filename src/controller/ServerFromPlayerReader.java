@@ -8,8 +8,10 @@ import java.util.logging.Logger;
 
 /**
  * A thread to read input from a client.
+ *
  * @author Clem Hasselbach (original, from which this was adapted)
- * @author Jonathan Lovelace (cleanups, docs, adapting to fit needs of this game)
+ * @author Jonathan Lovelace (cleanups, docs, adapting to fit needs of this
+ *         game)
  *
  */
 public class ServerFromPlayerReader extends Thread {
@@ -42,11 +44,16 @@ public class ServerFromPlayerReader extends Thread {
 	 * Whether we should continue to read.
 	 */
 	private boolean shouldContinue = true;
+
 	/**
-	 * @param sock the socket we are handling
-	 * @param adapter the API adapter to hand messages to
-	 * @param ind our index in the table of threads
-	 * @param outHopper The output hopper into which to put the output of commands
+	 * @param sock
+	 *            the socket we are handling
+	 * @param adapter
+	 *            the API adapter to hand messages to
+	 * @param ind
+	 *            our index in the table of threads
+	 * @param outHopper
+	 *            The output hopper into which to put the output of commands
 	 */
 	public ServerFromPlayerReader(final Socket sock,
 			final ServerAPIAdapter adapter, final int ind,
@@ -56,6 +63,7 @@ public class ServerFromPlayerReader extends Thread {
 		index = ind;
 		out = outHopper;
 	}
+
 	/**
 	 * The main loop of this thread.
 	 */
@@ -67,10 +75,17 @@ public class ServerFromPlayerReader extends Thread {
 			while (shouldContinue && (input = in.readObject()) != null) {
 				if (input instanceof String) {
 					if (player == -2) {
-						if (((String) input).toLowerCase().startsWith("player ")) {
+						if (((String) input).toLowerCase()
+								.startsWith("player ")) {
 							final String[] command =
 									((String) input).toLowerCase().split(" ");
-							player = Integer.parseInt(command[1]);
+							int localPlayer = Integer.parseInt(command[1]);
+							try {
+								api.addPlayer(localPlayer);
+							} catch (IllegalArgumentException e) {
+								out.queue("INUSE");
+								continue;
+							}
 							out.queue("ACK");
 						} else {
 							out.queue("Need PLAYER command first");
@@ -82,15 +97,18 @@ public class ServerFromPlayerReader extends Thread {
 					out.queue("We only accept String inputs");
 				}
 			}
-			} catch (ClassNotFoundException except) {
-				out.queue("We only accept String inputs");
+		} catch (ClassNotFoundException except) {
+			out.queue("We only accept String inputs");
 			LOGGER.log(Level.SEVERE, "Class not found in message from player "
 					+ index, except);
-			} catch (IOException except) {
+		} catch (IOException except) {
 			LOGGER.log(Level.SEVERE, "I/O error in dealing with player "
 					+ index, except);
-			}
+		} finally {
+			api.removePlayer(player);
+		}
 	}
+
 	/**
 	 * Stop reading after the next request.
 	 */
