@@ -18,6 +18,7 @@ import protocol.FixtureRemovalMessage;
 import protocol.MultiMessageMessage;
 import protocol.OpposingUnitMessage;
 import protocol.OwnUnitMessage;
+import protocol.PlayerPresentMessage;
 import protocol.RPCMessage;
 import protocol.TerrainChangeMessage;
 import protocol.TurnEndMessage;
@@ -38,7 +39,7 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	/**
 	 * The number of the current player.
 	 */
-	private final int player;
+	private int player = -1;
 	/**
 	 * Whether we should continue to run.
 	 */
@@ -54,12 +55,9 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 	 *
 	 * @param sock
 	 *            the socket connecting us to the client
-	 * @param index
-	 *            the number of the player we're handling
 	 */
-	public ServerToPlayerWriter(final Socket sock, final int index) {
+	public ServerToPlayerWriter(final Socket sock) {
 		socket = sock;
-		player = index;
 	}
 
 	/**
@@ -122,6 +120,13 @@ public class ServerToPlayerWriter extends Thread implements MapUpdateListener {
 				new ObjectOutputStream(socket.getOutputStream())) {
 			RPCMessage message;
 			while (continueFlag && (message = get()) != null) {
+				// AcknowledgeMessage, used to say "yes" to player number
+				// proposals, doesn't say which number. But it's one more than
+				// the previous proposal, so we update our guess every time a
+				// proposal is rejected.
+				if (message instanceof PlayerPresentMessage) {
+					player = ((PlayerPresentMessage) message).getNumber() + 1;
+				}
 				out.writeObject(message);
 				out.flush();
 				out.reset();

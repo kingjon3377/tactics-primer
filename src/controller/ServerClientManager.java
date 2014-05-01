@@ -15,23 +15,16 @@ public class ServerClientManager extends Thread {
 	 */
 	private final Socket socket;
 	/**
-	 * The player number.
-	 */
-	private final int player;
-	/**
 	 * The API adapter to turn RPC calls into API calls.
 	 */
 	private final ServerAPIAdapter api;
 	/**
 	 * Constructor.
 	 * @param sock the socket connecting to the client
-	 * @param index the player number
 	 * @param adapter the API adapter
 	 */
-	public ServerClientManager(final Socket sock, final int index,
-			final ServerAPIAdapter adapter) {
+	public ServerClientManager(final Socket sock, final ServerAPIAdapter adapter) {
 		socket = sock;
-		player = index;
 		api = adapter;
 	}
 	/**
@@ -39,10 +32,9 @@ public class ServerClientManager extends Thread {
 	 */
 	@Override
 	public void run() {
-		final ServerToPlayerWriter writer =
-				new ServerToPlayerWriter(socket, player);
+		final ServerToPlayerWriter writer = new ServerToPlayerWriter(socket);
 		final ServerFromPlayerReader reader =
-				new ServerFromPlayerReader(socket, api, player, writer);
+				new ServerFromPlayerReader(socket, api, writer);
 		writer.start();
 		reader.start();
 		api.addMapUpdateListener(writer);
