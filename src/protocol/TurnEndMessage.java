@@ -9,17 +9,19 @@ public class TurnEndMessage extends RPCMessage {
 	 * In server-to-client: Whose turn it is next.
 	 * In client-to-server: whose turn is ending.
 	 */
-	private final int player;
+	private final int next;
 	/**
-	 * @param playr whose turn it is next, or whose turn is ending
+	 * @param player the player being communicated with
+	 * @param nextP whose turn it is next, or whose turn is ending
 	 */
-	public TurnEndMessage(final int playr) {
-		player = playr;
+	public TurnEndMessage(final int player, final int nextP) {
+		super(player);
+		next = nextP;
 	}
 	/**
 	 * @return whose turn it is next or is ending
 	 */
-	public int getPlayer() {
-		return player;
+	public int getNext() {
+		return next;
 	}
 }

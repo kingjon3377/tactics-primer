@@ -30,10 +30,13 @@ public class TerrainChangeMessage extends RPCMessage {
 		return type;
 	}
 	/**
+	 * @param player the player being communicated with
 	 * @param loc where the terrain changed
 	 * @param ttype what it changed to
 	 */
-	public TerrainChangeMessage(final IPoint loc, final TileType ttype) {
+	public TerrainChangeMessage(final int player, final IPoint loc,
+			final TileType ttype) {
+		super(player);
 		point = loc;
 		type = ttype;
 	}

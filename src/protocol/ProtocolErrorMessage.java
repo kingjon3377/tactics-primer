@@ -13,9 +13,11 @@ public class ProtocolErrorMessage extends RPCMessage {
 	 */
 	private final String message;
 	/**
+	 * @param player the player being communicated with
 	 * @param msg an explanation of the error
 	 */
-	public ProtocolErrorMessage(final String msg) {
+	public ProtocolErrorMessage(final int player, final String msg) {
+		super(player);
 		message = msg;
 	}
 	/**

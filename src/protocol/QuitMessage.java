@@ -5,8 +5,10 @@ package protocol;
  *
  */
 public class QuitMessage extends RPCMessage {
-	@Override
-	public String toString() {
-		return "Quit";
+	/**
+	 * @param player the player being communicated with
+	 */
+	public QuitMessage(final int player) {
+		super(player);
 	}
 }

@@ -1,5 +1,6 @@
 package controller;
 
+import gamenet.GamePlayer;
 import model.IPoint;
 import model.ProxyUnit;
 import model.SimpleUnit;
@@ -56,4 +57,5 @@ public interface ITPClient {
 	 */
 	void changeTerrain(IPoint point, TileType type);
 	public abstract void stopThreads();
+	public void setServerConnection(GamePlayer conn);
 }

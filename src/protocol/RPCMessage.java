@@ -13,9 +13,26 @@ public class RPCMessage implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * Do not instantiate directly.
+	 * The player being communicated with, or the player number being negotiated.
 	 */
-	protected RPCMessage() {
-		// Do not instantiate.
+	private final int player;
+
+	/**
+	 * @return the player being communicated with, or the player number being
+	 *         negotiated.
+	 */
+	public final int getPlayer() {
+		return player;
+	}
+
+	/**
+	 * Do not instantiate directly.
+	 *
+	 * @param playr
+	 *            the player being communicated with, or the player number being
+	 *            negotiated.
+	 */
+	protected RPCMessage(final int playr) {
+		player = playr;
 	}
 }

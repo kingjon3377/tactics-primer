@@ -1,5 +1,9 @@
 package controller;
 
+import gamenet.GameCreator;
+import gamenet.GameNetCoreGame;
+
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -9,8 +13,18 @@ import model.ITileFixture;
 import model.Point;
 import model.TileType;
 
-public class ServerStarter {
-	public void startServer(final int port) {
+public class ServerStarter extends GameCreator {
+	public static void main(final String[] args) {
+		try {
+			// XXX: The server SHOULD NOT know about the GUI!
+			new ServerStarter().enterGame(new GUIStarter());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Override
+	public GameNetCoreGame createGame() {
 		Map<IPoint, TileType> terrain = new HashMap<>();
 		Map<IPoint, ITileFixture> fixtures = new HashMap<>();
 		final int maxType = TileType.values().length;
@@ -21,11 +35,7 @@ public class ServerStarter {
 						TileType.values()[random.nextInt(maxType)]);
 			}
 		}
-		final TPServer server = new TPServer(terrain, fixtures);
-		new ServerThread(server, port).start();
-	}
-	public static void main(final String[] args) {
-		new ServerStarter().startServer(Integer.parseInt(args[0]));
+		return new ServerAPIAdapter(new TPServer(terrain, fixtures));
 	}
 
 }
