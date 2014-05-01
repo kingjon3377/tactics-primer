@@ -1,5 +1,7 @@
 package view;
 
+import java.awt.Dimension;
+
 import javax.swing.JComponent;
 
 import model.IPoint;
@@ -31,6 +33,8 @@ public class GUITile extends JComponent {
 	 */
 	public GUITile(final IPoint loc) {
 		point = loc;
+		setMinimumSize(new Dimension(32, 32));
+		setPreferredSize(new Dimension(32, 32));
 	}
 	/**
 	 * @return the location we represent

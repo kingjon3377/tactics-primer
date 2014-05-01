@@ -76,29 +76,38 @@ public class ClientFromServerReader extends Thread {
 	private void handleMessage(final RPCMessage message) {
 		if (message instanceof TurnEndMessage) {
 			client.endTurn(((TurnEndMessage) message).getPlayer());
+			System.out.println("End turn");
 		} else if (message instanceof OpposingUnitMessage) {
 			client.addOpposingUnit(((OpposingUnitMessage) message).getPoint(),
 					((OpposingUnitMessage) message).getUnit());
+			System.out.println("Opposing unit");
 		} else if (message instanceof OwnUnitMessage) {
 			client.addOwnUnit(((OwnUnitMessage) message).getPoint(),
 					((OwnUnitMessage) message).getUnit());
+			System.out.println("Own unit");
 		} else if (message instanceof AcknowledgedMessage) {
 			client.setPlayerNumber();
+			System.out.println("ACK");
 		} else if (message instanceof FixtureMoveMessage) {
 			client.moveFixture(((FixtureMoveMessage) message).getSource(),
 					((FixtureMoveMessage) message).getDest(),
 					((FixtureMoveMessage) message).getMover());
+			System.out.println("Fixture move");
 		} else if (message instanceof FixtureRemovalMessage) {
 			client.removeFixture(((FixtureRemovalMessage) message).getPoint(),
 					((FixtureRemovalMessage) message).getID());
+			System.out.println("Fixture remove");
 		} else if (message instanceof PlayerPresentMessage) {
 			client.rejectPlayerNumber();
+			System.out.println("NACK");
 		} else if (message instanceof TerrainChangeMessage) {
 			client.changeTerrain(((TerrainChangeMessage) message).getPoint(),
 					((TerrainChangeMessage) message).getType());
+			System.out.println("Terrain change");
 		} else if (message instanceof ProtocolErrorMessage) {
 			ui.showError("Server sent us an error message", new Throwable(
 					((ProtocolErrorMessage) message).getMessage()));
+			System.out.println("Error");
 		} else {
 			ui.showError("Server sent a message we don't know how to handle", null);
 		}

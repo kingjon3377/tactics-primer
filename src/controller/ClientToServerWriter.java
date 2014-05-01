@@ -42,9 +42,13 @@ public class ClientToServerWriter extends Thread {
 	 */
 	public void stopWriter() {
 		queue(new QuitMessage());
-		notify();
+		synchronized (this) {
+			notify();
+		}
 		continueFlag = false;
-		notify();
+		synchronized (this) {
+			notify();
+		}
 	}
 
 	/**

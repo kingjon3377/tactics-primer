@@ -76,6 +76,7 @@ public class TPClient extends Thread implements ITPClient {
 	@Override
 	public void setPlayerNumber() {
 		proceed = true;
+		writer.requestFullMap(player);
 	}
 	/**
 	 * Reject the current proposed player number.
@@ -219,6 +220,7 @@ public class TPClient extends Thread implements ITPClient {
 	public void run() {
 		writer.start();
 		reader.start();
+		writer.proposePlayer(player);
 		while (writer.isAlive() && reader.isAlive()) {
 			try {
 				writer.join();

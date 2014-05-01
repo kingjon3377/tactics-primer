@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class GUIMap extends JPanel implements MapUpdateListener {
 				tile.addMouseMotionListener(listener);
 			}
 		}
+		setMinimumSize(new Dimension(320, 320));
+		setPreferredSize(new Dimension(320, 320));
 	}
 	/**
 	 * @return the player we handle
