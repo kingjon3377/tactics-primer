@@ -1,6 +1,7 @@
 package controller;
 
-import java.net.Socket;
+import gamenet.GamePlayer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +14,12 @@ import model.ProxyUnit;
 import model.SimpleUnit;
 import model.TPMap;
 import model.TileType;
+
+import org.eclipse.jdt.annotation.Nullable;
+
 import protocol.FixtureMoveMessage;
-import view.TPUI;
+import protocol.FullMapRequestMessage;
+import protocol.PlayerRequestMessage;
 
 import common.MapUpdateListener;
 
@@ -23,7 +28,11 @@ import common.MapUpdateListener;
  * @author Jonathan Lovelace
  *
  */
-public class TPClient extends Thread implements ITPClient {
+public class TPClient implements ITPClient {
+	/**
+	 * The connection to the server
+	 */
+	@Nullable GamePlayer serverConnection;
 	/**
 	 * The player number.
 	 */
@@ -32,22 +41,6 @@ public class TPClient extends Thread implements ITPClient {
 	 * Whether we can send non-player-number-negotiation messages.
 	 */
 	private boolean proceed = false;
-	/**
-	 * Whether we should continue running at all.
-	 */
-	private boolean continueFlag = true;
-	/**
-	 * The socket connecting us to the server.
-	 */
-	private final Socket socket;
-	/**
-	 * The reader listening to the server.
-	 */
-	private final ClientFromServerReader reader;
-	/**
-	 * The writer writing to the server.
-	 */
-	private final ClientToServerWriter writer;
 	/**
 	 * The map.
 	 */
@@ -61,14 +54,9 @@ public class TPClient extends Thread implements ITPClient {
 	 * Map change listeners.
 	 */
 	private final List<MapUpdateListener> listeners = new ArrayList<>();
-	/**
-	 * @param sock the socket connecting us to the server
-	 * @param ui the user interface
-	 */
-	public TPClient(final Socket sock, final TPUI ui) {
-		socket = sock;
-		reader = new ClientFromServerReader(socket, ui, this);
-		writer = new ClientToServerWriter(socket);
+	@Override
+	public void setServerConnection(final GamePlayer conn) {
+		serverConnection = conn;
 	}
 	/**
 	 * Allow sending any non-player-number-negotiation messages.
@@ -76,7 +64,10 @@ public class TPClient extends Thread implements ITPClient {
 	@Override
 	public void setPlayerNumber() {
 		proceed = true;
-		writer.requestFullMap(player);
+		final GamePlayer server = serverConnection;
+		if (server != null) {
+			server.sendMessage(new FullMapRequestMessage(player));
+		}
 	}
 	/**
 	 * Reject the current proposed player number.
@@ -85,7 +76,10 @@ public class TPClient extends Thread implements ITPClient {
 	public void rejectPlayerNumber() {
 		if (!proceed) {
 			player++;
-			writer.proposePlayer(player);
+			final GamePlayer server = serverConnection;
+			if (server != null) {
+				server.sendMessage(new PlayerRequestMessage(player));
+			}
 		}
 	}
 	/**
@@ -141,7 +135,10 @@ public class TPClient extends Thread implements ITPClient {
 					listener.fixtureMoved(source, dest, mover);
 				}
 			} else {
-				writer.requestFullMap(player);
+				final GamePlayer server = serverConnection;
+				if (server != null) {
+					server.sendMessage(new FullMapRequestMessage(player));
+				}
 			}
 		}
 	}
@@ -160,7 +157,10 @@ public class TPClient extends Thread implements ITPClient {
 					listener.fixtureRemoved(point, contents);
 				}
 			} else {
-				writer.requestFullMap(player);
+				final GamePlayer server = serverConnection;
+				if (server != null) {
+					server.sendMessage(new FullMapRequestMessage(player));
+				}
 			}
 		}
 	}
@@ -208,8 +208,11 @@ public class TPClient extends Thread implements ITPClient {
 			}
 			final ITileFixture target = map.getContents(entry.getValue());
 			if (target == null) {
-				writer.queue(new FixtureMoveMessage(source, entry.getValue(),
-						entry.getKey().intValue()));
+				final GamePlayer server = serverConnection;
+				if (server != null) {
+					server.sendMessage(new FixtureMoveMessage(player, source, entry.getValue(),
+							entry.getKey().intValue()));
+				}
 			} else {
 				// Attack.
 			}
@@ -217,32 +220,9 @@ public class TPClient extends Thread implements ITPClient {
 	}
 
 	@Override
-	public void run() {
-		writer.start();
-		reader.start();
-		writer.proposePlayer(player);
-		while (writer.isAlive() && reader.isAlive()) {
-			try {
-				writer.join();
-			} catch (InterruptedException e) {
-				continue;
-			}
-		}
-		try {
-			reader.join();
-		} catch (InterruptedException e) {
-			return;
-		}
-	}
-	@Override
 	public void stopThreads() {
-		if (writer.isAlive()) {
-			writer.stopWriter();
-			writer.notify();
-		}
-		if (reader.isAlive()) {
-			reader.stopReading();
-			reader.notify();
+		if (serverConnection != null) {
+			serverConnection.doneWithGame();
 		}
 	}
 }

@@ -6,10 +6,9 @@ package protocol;
  */
 public class AcknowledgedMessage extends RPCMessage {
 	/**
-	 * @return "ACK"
+	 * @param player the player being communicated with
 	 */
-	@Override
-	public String toString() {
-		return "ACK";
+	public AcknowledgedMessage(final int player) {
+		super(player);
 	}
 }

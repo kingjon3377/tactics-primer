@@ -17,10 +17,13 @@ public class FixtureRemovalMessage extends RPCMessage {
 	 */
 	private final int fixID;
 	/**
-	 * @param loc where the fixture is locate
+	 * @param player the player being communicated with
+	 * @param loc where the fixture is located
 	 * @param id its ID #
 	 */
-	public FixtureRemovalMessage(final IPoint loc, final int id) {
+	public FixtureRemovalMessage(final int player, final IPoint loc,
+			final int id) {
+		super(player);
 		point = loc;
 		fixID = id;
 	}

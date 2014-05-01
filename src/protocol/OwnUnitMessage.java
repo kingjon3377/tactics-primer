@@ -55,10 +55,13 @@ public class OwnUnitMessage extends RPCMessage {
 	private final int unitOwner;
 	/**
 	 * Constructor.
+	 * @param player the player being communicated with
 	 * @param loc where the unit is
 	 * @param unit the unit to transmit
 	 */
-	public OwnUnitMessage(final IPoint loc, final SimpleUnit unit) {
+	public OwnUnitMessage(final int player, final IPoint loc,
+			final SimpleUnit unit) {
+		super(player);
 		point = loc;
 		unitID = unit.getID();
 		unitDesc = unit.getDescription();

@@ -31,9 +31,12 @@ public class ClientFixtureMessage extends RPCMessage {
 	private final IPoint point;
 	/**
 	 * @param fixType what kind of fixture to add.
+	 * @param player the player being communicated with
 	 * @param loc where to add it
 	 */
-	public ClientFixtureMessage(final FixtureType fixType, final IPoint loc) {
+	public ClientFixtureMessage(final int player, final FixtureType fixType,
+			final IPoint loc) {
+		super(player);
 		type = fixType;
 		point = loc;
 	}

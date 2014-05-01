@@ -65,10 +65,13 @@ public class OpposingUnitMessage extends RPCMessage {
 	}
 	/**
 	 * Constructor.
+	 * @param player the player being communicated with
 	 * @param unit the unit being transmitted
 	 * @param loc where the unit is located
 	 */
-	public OpposingUnitMessage(final IPoint loc, final ProxyUnit unit) {
+	public OpposingUnitMessage(final int player, final IPoint loc,
+			final ProxyUnit unit) {
+		super(player);
 		point = loc;
 		unitID = unit.getID();
 		unitDesc = unit.getDescription();

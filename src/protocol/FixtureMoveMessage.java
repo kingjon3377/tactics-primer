@@ -21,11 +21,14 @@ public class FixtureMoveMessage extends RPCMessage {
 	 */
 	private final int fixID;
 	/**
+	 * @param player the player being communicated with
 	 * @param src the source location
 	 * @param dst the destination location
 	 * @param id the mover's ID
 	 */
-	public FixtureMoveMessage(final IPoint src, final IPoint dst, final int id) {
+	public FixtureMoveMessage(final int player, final IPoint src,
+			final IPoint dst, final int id) {
+		super(player);
 		source = src;
 		dest = dst;
 		fixID = id;

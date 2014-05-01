@@ -6,7 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A message multiplexing other messages. It should not actually be sent over the wire.
+ * A message multiplexing other messages. It should not actually be sent over
+ * the wire.
+ *
  * @author Jonathan Lovelace
  *
  */
@@ -20,6 +22,7 @@ public class MultiMessageMessage extends RPCMessage implements Iterable<RPCMessa
 	 * @param messages the messages to transmit
 	 */
 	public MultiMessageMessage(final Collection<RPCMessage> messages) {
+		super(-1);
 		list.addAll(messages);
 	}
 	/**
