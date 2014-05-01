@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -63,6 +65,13 @@ public class TPGUI extends JFrame implements TPUI, MapUpdateListener,
 		detailPanel.add(selectLabel, BorderLayout.WEST);
 		detailPanel.add(hoverLabel, BorderLayout.EAST);
 		add(detailPanel, BorderLayout.SOUTH);
+		addWindowStateListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(@Nullable final WindowEvent e) {
+				client.stopThreads();
+				dispose();
+			}
+		});
 	}
 
 	@Override

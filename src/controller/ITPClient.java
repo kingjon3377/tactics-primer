@@ -55,4 +55,5 @@ public interface ITPClient {
 	 * @param type what to change it to
 	 */
 	void changeTerrain(IPoint point, TileType type);
+	public abstract void stopThreads();
 }

@@ -23,7 +23,7 @@ import common.MapUpdateListener;
  * @author Jonathan Lovelace
  *
  */
-public class TPClient implements ITPClient {
+public class TPClient extends Thread implements ITPClient {
 	/**
 	 * The player number.
 	 */
@@ -212,6 +212,35 @@ public class TPClient implements ITPClient {
 			} else {
 				// Attack.
 			}
+		}
+	}
+
+	@Override
+	public void run() {
+		writer.start();
+		reader.start();
+		while (writer.isAlive() && reader.isAlive()) {
+			try {
+				writer.join();
+			} catch (InterruptedException e) {
+				continue;
+			}
+		}
+		try {
+			reader.join();
+		} catch (InterruptedException e) {
+			return;
+		}
+	}
+	@Override
+	public void stopThreads() {
+		if (writer.isAlive()) {
+			writer.stopWriter();
+			writer.notify();
+		}
+		if (reader.isAlive()) {
+			reader.stopReading();
+			reader.notify();
 		}
 	}
 }

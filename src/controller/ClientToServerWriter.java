@@ -9,6 +9,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import protocol.FullMapRequestMessage;
 import protocol.PlayerRequestMessage;
+import protocol.QuitMessage;
 import protocol.RPCMessage;
 
 /**
@@ -40,6 +41,8 @@ public class ClientToServerWriter extends Thread {
 	 * Stop this thread at the next opportunity.
 	 */
 	public void stopWriter() {
+		queue(new QuitMessage());
+		notify();
 		continueFlag = false;
 		notify();
 	}

@@ -10,6 +10,7 @@ import protocol.AcknowledgedMessage;
 import protocol.PlayerPresentMessage;
 import protocol.PlayerRequestMessage;
 import protocol.ProtocolErrorMessage;
+import protocol.QuitMessage;
 import protocol.RPCMessage;
 
 /**
@@ -52,13 +53,11 @@ public class ServerFromPlayerReader extends Thread {
 	 *            the socket we are handling
 	 * @param adapter
 	 *            the API adapter to hand messages to
-	 * @param ind
-	 *            our index in the table of threads
 	 * @param outHopper
 	 *            The output hopper into which to put the output of commands
 	 */
 	public ServerFromPlayerReader(final Socket sock,
-			final ServerAPIAdapter adapter, final int ind,
+			final ServerAPIAdapter adapter,
 			final ServerToPlayerWriter outHopper) {
 		socket = sock;
 		api = adapter;
@@ -92,6 +91,9 @@ public class ServerFromPlayerReader extends Thread {
 							out.queue(new ProtocolErrorMessage(
 									"Negotiate player number first"));
 						}
+					} else if (input instanceof QuitMessage) {
+						out.stopWriter();
+						stopReading();
 					} else {
 						out.queue(api.process((RPCMessage) input, player));
 					}
