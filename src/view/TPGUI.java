@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -58,12 +59,14 @@ public class TPGUI extends JFrame implements TPUI, MapUpdateListener,
 		endTurnButton.addActionListener(this);
 		actionPanel.add(endTurnButton);
 		actionPanel.add(turnCounter);
+		actionPanel.setMinimumSize(new Dimension(320, 20));
 		add(actionPanel, BorderLayout.NORTH);
 		add(new GUIMap(this), BorderLayout.CENTER);
 		client = cli;
 		final JPanel detailPanel = new JPanel(new BorderLayout());
 		detailPanel.add(selectLabel, BorderLayout.WEST);
 		detailPanel.add(hoverLabel, BorderLayout.EAST);
+		detailPanel.setMinimumSize(new Dimension(320, 20));
 		add(detailPanel, BorderLayout.SOUTH);
 		addWindowStateListener(new WindowAdapter() {
 			@Override
@@ -72,6 +75,7 @@ public class TPGUI extends JFrame implements TPUI, MapUpdateListener,
 				dispose();
 			}
 		});
+		pack();
 	}
 
 	@Override
